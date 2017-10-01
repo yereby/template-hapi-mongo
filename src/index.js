@@ -4,7 +4,7 @@ const inert = require ('inert')
 const pug = require('pug')
 const vision = require('vision')
 
-const PRODUCTION = process.env.NODE_ENV === 'PRODUCTION'
+const PRODUCTION = process.env.NODE_ENV === 'production'
 
 if (!PRODUCTION) { require('dotenv').config() }
 
@@ -16,7 +16,6 @@ if (!process.env.DEBUG) {
 }
 
 const debug = require('debug')('app:server')
-const connection = require('./models/connection')
 const routes = require('./routes/index')
 
 ////////////
@@ -42,8 +41,7 @@ const goodOpts = {
 const plugins = [
   { register: good, options: goodOpts }, // Process monitoring
   inert, // Static file and directory handlers
-  vision,
-  connection // Connection to the mongodb base
+  vision
 ]
 
 /////////////////////////////
@@ -75,11 +73,17 @@ server.route(routes)
 // ## Lancement du serveur
 
 if (!module.parent) {
+  // Prod database
+  server.register(require('./models/connection'), (err) => { if (err) { throw err } })
+
   server.start((err) => {
     if (err) { throw err }
 
     debug(`Server started at ${server.info.uri}`)
   })
+} else {
+  // Test database
+  server.register(require('./models/connectionTest'), (err) => { if (err) { throw err } })
 }
 
 module.exports = server
