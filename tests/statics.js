@@ -24,3 +24,5 @@ test('Point d\'entrée pour un fichier qui n\'existe pas', assert => {
     assert.end()
   })
 })
+
+test.onFinish(() => process.exit(0))

@@ -4,11 +4,20 @@ const inert = require ('inert')
 const pug = require('pug')
 const vision = require('vision')
 
-const routes = require('./routes/index')
-
 const PRODUCTION = process.env.NODE_ENV === 'PRODUCTION'
 
 if (!PRODUCTION) { require('dotenv').config() }
+
+if (!process.env.DEBUG) {
+  /* eslint-disable no-console */
+  console.log('There is no DEBUG env variable, you may want to create a .env file first.')
+  console.log('See the README.')
+  /* eslint-enable no-console */
+}
+
+const debug = require('debug')('app:server')
+const connection = require('./models/connection')
+const routes = require('./routes/index')
 
 ////////////
 // # PLUGINS
@@ -33,7 +42,8 @@ const goodOpts = {
 const plugins = [
   { register: good, options: goodOpts }, // Process monitoring
   inert, // Static file and directory handlers
-  vision
+  vision,
+  connection // Connection to the mongodb base
 ]
 
 /////////////////////////////
@@ -68,8 +78,7 @@ if (!module.parent) {
   server.start((err) => {
     if (err) { throw err }
 
-    // eslint-disable-next-line no-console
-    console.log(`Server started at ${server.info.uri}`)
+    debug(`Server started at ${server.info.uri}`)
   })
 }
 

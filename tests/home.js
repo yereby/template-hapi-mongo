@@ -16,3 +16,4 @@ test('Point d\'entrée de la home', assert => {
   })
 })
 
+test.onFinish(() => process.exit(0))
