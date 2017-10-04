@@ -3,6 +3,7 @@ const good = require('good')
 const inert = require ('inert')
 const pug = require('pug')
 const vision = require('vision')
+const hapiMongooseConnect = require('./models/connectionPlugin')
 
 const PRODUCTION = process.env.NODE_ENV === 'production'
 
@@ -33,6 +34,14 @@ const goodOpts = {
     }, {
       module: 'good-console'
     }, 'stdout']
+  }
+}
+
+const hapiMongooseConnectOpts = {
+  uri: 'mongodb://localhost/template',
+  options: {
+    useMongoClient: true,
+    connectTimeoutMS: 1000
   }
 }
 
@@ -73,17 +82,15 @@ server.route(routes)
 // ## Lancement du serveur
 
 if (!module.parent) {
-  // Prod database
-  server.register(require('./models/connection'), (err) => { if (err) { throw err } })
+  server.register({ register: hapiMongooseConnect, options: hapiMongooseConnectOpts }, (err) => {
+    if (err) { throw err }
+  })
 
   server.start((err) => {
     if (err) { throw err }
 
     debug(`Server started at ${server.info.uri}`)
   })
-} else {
-  // Test database
-  server.register(require('./models/connectionTest'), (err) => { if (err) { throw err } })
 }
 
 module.exports = server
