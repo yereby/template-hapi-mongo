@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "start": "nodemon -e js,pug src/index.js",
     "test": "tape tests/**/*.js | tap-dot",
+    "test-min": "tape tests/**/*.js | tap-min",
     "testwatch": "nodemon --exec npm test"
   },
   "dependencies": {
@@ -31,10 +32,11 @@
     "nodemon": "^1.12.0",
     "pre-commit": "^1.2.2",
     "tap-dot": "^1.0.5",
+    "tap-min": "^1.2.2",
     "tape": "^4.8.0"
   },
   "pre-commit": [
     "lint",
-    "test"
+    "test-min"
   ]
 }
