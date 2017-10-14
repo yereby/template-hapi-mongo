@@ -41,7 +41,7 @@ const hapiMongooseConnectOpts = {
 // ## Inscription des plugins
 
 const plugins = [
-  { register: good, options: goodOpts }, // Process monitoring
+  { register: good, options: (!module.parent ? goodOpts : null) }, // Process monitoring
   inert, // Static file and directory handlers
   vision
 ]
