@@ -9,13 +9,6 @@ const PRODUCTION = process.env.NODE_ENV === 'production'
 
 if (!PRODUCTION) { require('dotenv').config() }
 
-if (!process.env.DEBUG) {
-  /* eslint-disable no-console */
-  console.log('There is no DEBUG env variable, you may want to create a .env file first.')
-  console.log('See the README.')
-  /* eslint-enable no-console */
-}
-
 const debug = require('debug')('app:server')
 const routes = require('./routes/index')
 
@@ -80,6 +73,11 @@ server.views({
 server.route(routes)
 
 // ## Lancement du serveur
+
+if (!process.env.DEBUG && !PRODUCTION) {
+  server.log('warn', 'There is no DEBUG env variable.')
+  server.log('warn', 'You may want to create a .env file first.')
+}
 
 if (!module.parent) {
   server.register({ register: hapiMongooseConnect, options: hapiMongooseConnectOpts }, (err) => {
