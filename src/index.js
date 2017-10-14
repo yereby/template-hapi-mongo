@@ -3,7 +3,7 @@ const good = require('good')
 const inert = require ('inert')
 const pug = require('pug')
 const vision = require('vision')
-const hapiMongooseConnect = require('./models/connectionPlugin')
+const hapiMongooseConnect = require('./plugins/connectDB')
 
 const PRODUCTION = process.env.NODE_ENV === 'production'
 
