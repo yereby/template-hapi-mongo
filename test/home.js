@@ -1,4 +1,4 @@
-const test = require('tape')
+const test = require('tap').test
 const server = require('../src/index')
 
 test('Point d\'entrée de la home', t => {
@@ -15,5 +15,3 @@ test('Point d\'entrée de la home', t => {
     t.end()
   })
 })
-
-test.onFinish(() => process.exit(0))

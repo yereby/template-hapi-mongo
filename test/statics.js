@@ -1,4 +1,4 @@
-const test = require('tape')
+const test = require('tap').test
 const server = require('../src/index')
 
 test('Point d\'entrée pour voir le favicon', t => {
@@ -24,5 +24,3 @@ test('Point d\'entrée pour un fichier qui n\'existe pas', t => {
     t.end()
   })
 })
-
-test.onFinish(() => process.exit(0))
