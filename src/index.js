@@ -3,7 +3,7 @@ const good = require('good')
 const inert = require ('inert')
 const pug = require('pug')
 const vision = require('vision')
-const hapiMongooseConnect = require('./plugins/connectDB')
+const mongooseConnect = require('./plugins/connectDB')
 
 const PRODUCTION = process.env.NODE_ENV === 'production'
 
@@ -30,7 +30,7 @@ const goodOpts = {
   }
 }
 
-const hapiMongooseConnectOpts = {
+const mongooseOpts = {
   uri: 'mongodb://localhost/template',
   options: {
     useMongoClient: true,
@@ -80,7 +80,7 @@ if (!process.env.DEBUG && !PRODUCTION) {
 }
 
 if (!module.parent) {
-  server.register({ register: hapiMongooseConnect, options: hapiMongooseConnectOpts }, (err) => {
+  server.register({ register: mongooseConnect, options: mongooseOpts }, (err) => {
     if (err) { throw err }
   })
 
