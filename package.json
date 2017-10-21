@@ -10,7 +10,7 @@
     "livereload": "livereload . -e pug -w 1700",
     "lint": "eslint .",
     "start": "nodemon -e js,pug src/index.js",
-    "test": "tap -b -- test/*.js",
+    "test": "tap -b --cov -- test/*.js",
     "test:parallel": "tap -J --reporter=nyan -- test/*.js",
     "test:watch": "nodemon --exec npm test"
   },
@@ -40,5 +40,10 @@
   "pre-commit": [
     "lint",
     "test:parallel"
-  ]
+  ],
+  "nyc": {
+    "exclude": [
+      "src/plugins/connectDB.js"
+    ]
+  }
 }
