@@ -1,4 +1,5 @@
 const Mongoose = require('mongoose')
+Mongoose.Promise = global.Promise
 
 const userSchema = new Mongoose.Schema({
   email: { type: String, trim: true, index: true, unique: true, required: true, maxlength: 255 },

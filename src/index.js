@@ -9,7 +9,6 @@ const PRODUCTION = process.env.NODE_ENV === 'production'
 
 if (!PRODUCTION) { require('dotenv').config() }
 
-const debug = require('debug')('app:server')
 const routes = require('./routes/index')
 
 ////////////
@@ -50,7 +49,7 @@ const plugins = [
 // # Configuration du serveur
 /////////////////////////////
 
-const server = new Hapi.Server()
+const server = new Hapi.Server({debug: { request: ['warn']}})
 
 // Options
 server.connection({ port: process.env.PORT || 1337 })
@@ -87,7 +86,7 @@ if (!module.parent) {
   server.start((err) => {
     if (err) { throw err }
 
-    debug(`Server started at ${server.info.uri}`)
+    server.log(`Server started at ${server.info.uri}`)
   })
 }
 

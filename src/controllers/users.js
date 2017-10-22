@@ -20,9 +20,7 @@ module.exports.signup = {
     }
   },
   handler: (request, reply) => {
-    const newUser = new User(request.payload)
-
-    newUser.create()
+    User.create(request.payload)
       .then(reply)
       .catch(err => {
         switch (err.code) {
