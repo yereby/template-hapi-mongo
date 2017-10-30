@@ -30,8 +30,8 @@ There is a wait timer to let the server reloading itself after a file is modifie
 
 ## Environnement variables
 
-A `.env` file is loaded via "dotenv" package, to allow you to pass variables
-to `process.env`. Here is a sample :
+A ".env" file is loaded via "dotenv" package, to allow you to pass variables
+to "process.env". Here is a sample :
 
 ```
 DEBUG = app:*
