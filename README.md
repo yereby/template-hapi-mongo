@@ -11,11 +11,14 @@ Writen in es6, it use Hapijs framework and those noticeable packages :
 ## How to run
 
 You need mongodb installed. For example with homebrew : `brew install mongodb`.  
-Then run the deamon like `mongod`.
+Then run the deamon like
+```sh
+mongod
+```
 
 Install the packages, and start the project :
 
-```
+```sh
 npm install
 npm start
 ```
@@ -30,4 +33,8 @@ There is a wait timer to let the server reloading itself after a file is modifie
 ## How to test
 
 The tests suite is writen with "tap". There is some tests samples in `tests/`.  
-Just run `npm test` or `npm run testwatch` which watch your files.
+Just run
+```sh
+npm test
+```
+or `npm run testwatch` which watch your files.
