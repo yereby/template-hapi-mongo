@@ -6,11 +6,15 @@ Writen in es6, it use Hapijs framework and those noticeable packages :
 - good
 - dotenv
 - livereload
-- tape
+- mongoose
+- tap
 
 ## How to run
 
-First install the packages, and start the project :
+You need mongodb installed. For example with homebrew : `brew install mongodb`.  
+Then run the deamon like `mongod`.
+
+Install the packages, and start the project :
 
 ```
 npm install
@@ -35,5 +39,5 @@ DEBUG = app:*
 
 ## How to test
 
-The tests suite is writen with "tape". There is some tests samples in `src/tests/`.  
+The tests suite is writen with "tape". There is some tests samples in `tests/`.  
 Just run `npm test` or `npm run testwatch` which watch your files.
