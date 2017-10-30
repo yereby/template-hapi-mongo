@@ -4,7 +4,6 @@ This project contains a template to run Hapi framework.
 Writen in es6, it use Hapijs framework and those noticeable packages :
 - nodemon
 - good
-- dotenv
 - livereload
 - mongoose
 - tap
