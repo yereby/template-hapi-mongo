@@ -27,15 +27,6 @@ Launch the browser to the url shown in the console, ie. http://localhost:1337.
 I you want to run the livereload, juste run `npm run livereload` in an other shell.  
 There is a wait timer to let the server reloading itself after a file is modified.
 
-## Environnement variables
-
-A ".env" file is loaded via "dotenv" package, to allow you to pass variables
-to "process.env". Here is a sample :
-
-```
-DEBUG = app:*
-```
-
 ## How to test
 
 The tests suite is writen with "tap". There is some tests samples in `tests/`.  
