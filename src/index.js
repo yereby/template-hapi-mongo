@@ -7,8 +7,6 @@ const mongooseConnect = require('./plugins/connectDB')
 
 const PRODUCTION = process.env.NODE_ENV === 'production'
 
-if (!PRODUCTION) { require('dotenv').config() }
-
 const routes = require('./routes/index')
 
 ////////////
@@ -72,11 +70,6 @@ server.views({
 server.route(routes)
 
 // ## Lancement du serveur
-
-if (!process.env.DEBUG && !PRODUCTION) {
-  server.log('warn', 'There is no DEBUG env variable.')
-  server.log('warn', 'You may want to create a .env file first.')
-}
 
 if (!module.parent) {
   server.register({ register: mongooseConnect, options: mongooseOpts }, (err) => {
