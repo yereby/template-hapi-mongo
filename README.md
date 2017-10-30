@@ -39,5 +39,5 @@ DEBUG = app:*
 
 ## How to test
 
-The tests suite is writen with "tape". There is some tests samples in `tests/`.  
+The tests suite is writen with "tap". There is some tests samples in `tests/`.  
 Just run `npm test` or `npm run testwatch` which watch your files.
