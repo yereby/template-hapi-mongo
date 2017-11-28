@@ -5,11 +5,11 @@ const pug = require('pug')
 const vision = require('vision')
 const mongooseConnect = require('./plugins/connectDB')
 
-const PRODUCTION = process.env.NODE_ENV === 'production'
-
-if (!PRODUCTION) { require('dotenv').config() }
-
 const routes = require('./routes/index')
+
+process.on('unhandledRejection', function(reason, p){
+  console.log("Possibly Unhandled Rejection at: Promise ", p, " reason: ", reason);
+});
 
 ////////////
 // # PLUGINS
@@ -37,11 +37,10 @@ const mongooseOpts = {
   }
 }
 
-// ## Inscription des plugins
-
 const plugins = [
-  { register: good, options: (!module.parent ? goodOpts : null) }, // Process monitoring
-  inert, // Static file and directory handlers
+  // { plugin: good, options: goodOpts },
+  { plugin: mongooseConnect, options: mongooseOpts },
+  inert,
   vision
 ]
 
@@ -49,45 +48,31 @@ const plugins = [
 // # Configuration du serveur
 /////////////////////////////
 
-const server = new Hapi.Server({debug: { request: ['warn']}})
-
-// Options
-server.connection({ port: process.env.PORT || 1337 })
-
-// Plugins
-server.register(plugins, (err) => { if (err) { throw err } })
-
-// Views
-server.views({
-  engines: { pug },
-  path: './src/views',
-  compileOptions: {
-    pretty: true
-  },
-  isCached: PRODUCTION,
-  context: { PRODUCTION }
+const server = new Hapi.Server({
+  port: process.env.PORT || 1337
 })
 
-// Routes
-server.route(routes)
+async function liftOff () {
+  await server.register(plugins)
 
-// ## Lancement du serveur
-
-if (!process.env.DEBUG && !PRODUCTION) {
-  server.log('warn', 'There is no DEBUG env variable.')
-  server.log('warn', 'You may want to create a .env file first.')
-}
-
-if (!module.parent) {
-  server.register({ register: mongooseConnect, options: mongooseOpts }, (err) => {
-    if (err) { throw err }
+  // Views
+  server.views({
+    engines: { pug },
+    path: './src/views',
+    compileOptions: { pretty: true },
+    isCached: process.env.NODE_ENV === 'production'
   })
 
-  server.start((err) => {
-    if (err) { throw err }
+  // Routes
+  server.route(routes)
 
-    server.log(`Server started at ${server.info.uri}`)
-  })
+  // ## Lancement du serveur
+  try {
+    await server.start()
+    console.log(`Server started at ${server.info.uri}`)
+  }
+  catch (err) { console.error(err) }
 }
+liftOff()
 
 module.exports = server
