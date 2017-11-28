@@ -3,7 +3,7 @@ const good = require('good')
 const inert = require ('inert')
 const pug = require('pug')
 const vision = require('vision')
-const mongooseConnect = require('./plugins/connectDB')
+const mongooseConnect = require('./plugins/DB')
 
 const routes = require('./routes/index')
 

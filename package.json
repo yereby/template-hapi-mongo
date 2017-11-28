@@ -41,7 +41,7 @@
   ],
   "nyc": {
     "exclude": [
-      "src/plugins/connectDB.js",
+      "src/plugins/DB.js",
       "test"
     ]
   }
