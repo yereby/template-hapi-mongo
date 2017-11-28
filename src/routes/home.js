@@ -3,7 +3,7 @@
 module.exports = [{
   method: 'GET',
   path: '/',
-  handler: (request, reply) => {
-    reply.view('home/index.pug')
+  handler: (request, h) => {
+    return h.view('home/index')
   }
 }]
