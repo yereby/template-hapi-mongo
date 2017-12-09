@@ -1,8 +1,16 @@
 const Boom = require('boom')
 const Joi = require('joi')
 Joi.ObjectId = require('joi-objectid')(Joi)
+
 const User = require('../models/users')
 
+
+/**
+ * Show the list of all users
+ *
+ * @example GET /users/
+ * @return {Object} The list of users || status code 404
+ */
 module.exports.list = () => {
   return User.find({})
     .then(users => users.length ? users : Boom.notFound())
