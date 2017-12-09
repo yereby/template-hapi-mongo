@@ -5,11 +5,7 @@ const User = require('../models/users')
 
 module.exports.list = () => {
   return User.find({})
-    .then(users => {
-      if (!users.length) { return Boom.notFound() }
-
-      return users
-    })
+    .then(users => users.length ? users : Boom.notFound())
     .catch(err => Boom.badImplementation(err))
 }
 
