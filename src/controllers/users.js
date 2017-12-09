@@ -36,11 +36,19 @@ module.exports.one = {
   }
 }
 
+/**
+ * Create one user
+ *
+ * @example POST /users
+ * @params {string} email Email of the user
+ * @params {string} name Name of the user
+ * @return {Object} User created || Some errors
+ */
 module.exports.create = {
   validate: {
     payload: {
       email: Joi.string().email().required(),
-      name: Joi.string().required()
+      name: Joi.string()
     }
   },
   handler: request => {
