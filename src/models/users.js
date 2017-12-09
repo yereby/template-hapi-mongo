@@ -14,7 +14,6 @@ const userSchema = new Mongoose.Schema({
     type: String,
     trim: true,
     index: true,
-    required: true,
     maxlength: 255
   },
   scope: {
@@ -30,14 +29,14 @@ const userSchema = new Mongoose.Schema({
 // On prend le nom complet avant le premier espace
 
 userSchema.virtual('firstname').get(function firstname () {
-  return this.name.split(' ')[0]
+  return this.name ? this.name.split(' ')[0] : null
 })
 
 // Retourne le ou les noms
 // On prend le nom complet après le premier espace
 
 userSchema.virtual('lastname').get(function lastname () {
-  return this.name.split(' ').slice(1, this.name.length).join(' ')
+  return this.name ? this.name.split(' ').slice(1, this.name.length).join(' ') : null
 })
 
 module.exports = Mongoose.model('User', userSchema)
