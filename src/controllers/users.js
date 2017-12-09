@@ -1,6 +1,6 @@
 const Boom = require('boom')
 const Joi = require('joi')
-Joi.ObjectId = require('joi-objectid')(Joi)
+Joi.objectId = require('joi-objectid')(Joi)
 
 const User = require('../models/users')
 
@@ -26,7 +26,7 @@ module.exports.list = () => {
 module.exports.one = {
   validate: {
     params: {
-      id: Joi.ObjectId()
+      id: Joi.objectId()
     }
   },
   handler: request => {
@@ -68,7 +68,7 @@ module.exports.create = {
 module.exports.remove = {
   validate: {
     params: {
-      id: Joi.ObjectId()
+      id: Joi.objectId()
     }
   },
   handler: request => {
