@@ -22,8 +22,7 @@ const userSchema = new Mongoose.Schema({
     default: 'user',
     enum: ['user', 'admin']
   }
-},
-{ timestamps: true })
+})
 
 // ## Virtuals properties
 
