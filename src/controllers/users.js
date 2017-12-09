@@ -1,5 +1,6 @@
 const Boom = require('boom')
 const Joi = require('joi')
+Joi.ObjectId = require('joi-objectid')(Joi)
 const User = require('../models/users')
 
 module.exports.list = () => {
@@ -34,14 +35,24 @@ module.exports.create = {
   }
 }
 
-module.exports.remove = request => {
-  return User.findOneAndRemove({ _id: request.params.id })
-    .then(res => {
-      if (!res) { return Boom.notFound() }
-
-      return res
-    })
-    .catch(err => Boom.badImplementation(err))
+/**
+ * Remove one user based on his _id
+ *
+ * @example DELETE /users/{ObjectId}
+ * @params {string} id ObjectId of the user
+ * @return {Object} User removed || status code 404
+ */
+module.exports.remove = {
+  validate: {
+    params: {
+      id: Joi.ObjectId()
+    }
+  },
+  handler: request => {
+    return User.findOneAndRemove({ _id: request.params.id })
+      .then(user =>  user || Boom.notFound())
+      .catch(err => Boom.badImplementation(err))
+  }
 }
 
 module.exports.set = {
