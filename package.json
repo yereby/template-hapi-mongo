@@ -11,8 +11,8 @@
     "lint": "eslint .",
     "start": "nodemon -e js,pug src/index.js",
     "test": "tap -b --cov -- test/*.js",
-    "test:parallel": "tap -J --reporter=nyan -- test/*.js",
-    "test:watch": "nodemon --exec npm test"
+    "test:p": "tap -J --reporter=nyan -- test/*.js",
+    "test:w": "nodemon --exec npm test"
   },
   "dependencies": {
     "boom": "^7.1.1",
@@ -37,7 +37,7 @@
   },
   "pre-commit": [
     "lint",
-    "test:parallel"
+    "test:p"
   ],
   "nyc": {
     "exclude": [
