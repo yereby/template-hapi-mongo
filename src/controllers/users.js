@@ -4,7 +4,6 @@ Joi.ObjectId = require('joi-objectid')(Joi)
 
 const User = require('../models/users')
 
-
 /**
  * Show the list of all users
  *
@@ -15,6 +14,26 @@ module.exports.list = () => {
   return User.find({})
     .then(users => users.length ? users : Boom.notFound())
     .catch(err => Boom.badImplementation(err))
+}
+
+/**
+ * Show one user infos based on its _id
+ *
+ * @example GET /users/{ObjectId}
+ * @params {string} id ObjectId of the user
+ * @return {Object} User wanted || status code 404
+ */
+module.exports.one = {
+  validate: {
+    params: {
+      id: Joi.ObjectId()
+    }
+  },
+  handler: request => {
+    return User.findOne({_id: request.params.id})
+      .then(user => user || Boom.notFound())
+      .catch(err => Boom.badImplementation(err))
+  }
 }
 
 module.exports.create = {
@@ -54,7 +73,7 @@ module.exports.remove = {
   },
   handler: request => {
     return User.findOneAndRemove({ _id: request.params.id })
-      .then(user =>  user || Boom.notFound())
+      .then(user => user || Boom.notFound())
       .catch(err => Boom.badImplementation(err))
   }
 }
