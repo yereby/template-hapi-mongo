@@ -10,7 +10,7 @@
     "livereload": "livereload . -e pug -w 1700",
     "lint": "eslint .",
     "start": "nodemon -e js,pug src/index.js",
-    "test": "tap -b --cov -- test/*.js",
+    "test": "tap -b -- test/*.js",
     "test:p": "tap -J --reporter=nyan -- test/*.js",
     "test:w": "nodemon --exec npm test"
   },
