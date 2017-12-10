@@ -41,7 +41,9 @@ function checkScope(scope) {
   return [...new Set(scope)]
 }
 
+// ##
 // ## Pre Methods
+// ##
 
 userSchema.pre('save', true, function (next, done) {
   this.scope = checkScope(this.scope)
@@ -53,7 +55,9 @@ userSchema.pre('findOneAndUpdate', true, function (next, done) {
   next(done())
 })
 
+// ##
 // ## Virtuals properties
+// ##
 
 // Retourne le prénom
 // On prend le nom complet avant le premier espace
