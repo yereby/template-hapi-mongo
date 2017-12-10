@@ -3,8 +3,8 @@ const good = require('good')
 const inert = require ('inert')
 const pug = require('pug')
 const vision = require('vision')
-const mongooseConnect = require('./plugins/DB')
 
+const mongooseConnect = require('./plugins/DB')
 const routes = require('./routes/index')
 
 process.on('unhandledRejection', function(reason, p){
@@ -30,7 +30,7 @@ const goodOpts = {
 }
 
 const mongooseOpts = {
-  uri: 'mongodb://localhost/template',
+  uri: 'mongodb://localhost/template-hapi',
   options: {
     useMongoClient: true,
     connectTimeoutMS: 1000
