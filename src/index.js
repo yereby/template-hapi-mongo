@@ -1,21 +1,12 @@
 const Hapi = require('hapi')
-const good = require('good')
-const inert = require ('inert')
-const pug = require('pug')
-const vision = require('vision')
 
-const mongooseConnect = require('./plugins/DB')
-const routes = require('./routes/index')
-
-process.on('unhandledRejection', function(reason, p){
-  console.log("Possibly Unhandled Rejection at: Promise ", p, " reason: ", reason);
-});
+process.on('unhandledRejection', error => {
+  console.log('Possibly Unhandled Rejection', error)
+})
 
 ////////////
 // # PLUGINS
 ////////////
-
-// ## Options des plugins
 
 const goodOpts = {
   reporters: {
@@ -38,41 +29,48 @@ const mongooseOpts = {
 }
 
 const plugins = [
-  // { plugin: good, options: goodOpts },
-  { plugin: mongooseConnect, options: mongooseOpts },
-  inert,
-  vision
+  // { plugin: require('good'), options: goodOpts },
+  require ('inert'),
+  require('vision')
 ]
+
+const routes = require('./routes/index')
 
 /////////////////////////////
 // # Configuration du serveur
 /////////////////////////////
 
-const server = new Hapi.Server({
-  port: process.env.PORT || 1337
-})
+const servOptions = { port: process.env.PORT || 1337 }
+if (module.parent) { servOptions.debug = { request: ['warn'] }}
 
-async function liftOff () {
+const server = new Hapi.Server(servOptions)
+
+server.liftOff = async function () {
   await server.register(plugins)
 
-  // Views
   server.views({
-    engines: { pug },
+    engines: { pug: require('pug') },
     path: './src/views',
     compileOptions: { pretty: true },
     isCached: process.env.NODE_ENV === 'production'
   })
 
-  // Routes
   server.route(routes)
 
-  // ## Lancement du serveur
   try {
-    await server.start()
-    console.log(`Server started at ${server.info.uri}`)
-  }
-  catch (err) { console.error(err) }
+    if (!module.parent) {
+      await server.register({ plugin: require('./plugins/DB'), options: mongooseOpts })
+      await server.start()
+      console.log(`Server started at ${server.info.uri}`)
+    } else {
+      await server.initialize()
+    }
+  } catch (err) { throw err }
 }
-liftOff()
+
+// Server start
+void async function () {
+  if (!module.parent) { await server.liftOff() }
+}()
 
 module.exports = server
