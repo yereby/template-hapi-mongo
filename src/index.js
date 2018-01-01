@@ -1,24 +1,25 @@
 const Hapi = require('hapi')
 
 process.on('unhandledRejection', error => {
-  console.log('Possibly Unhandled Rejection', error)
+  console.log('Unhandled promise rejection', error)
 })
 
 ////////////
 // # PLUGINS
 ////////////
 
-const goodOpts = {
-  reporters: {
-    console: [{
-      module: 'good-squeeze',
-      name: 'Squeeze',
-      args: [{ log: '*', response: '*' }]
-    }, {
-      module: 'good-console'
-    }, 'stdout']
-  }
-}
+// Good is not yet passed to hapi17
+// const goodOpts = {
+//   reporters: {
+//     console: [{
+//       module: 'good-squeeze',
+//       name: 'Squeeze',
+//       args: [{ log: '*', response: '*' }]
+//     }, {
+//       module: 'good-console'
+//     }, 'stdout']
+//   }
+// }
 
 const mongooseOpts = {
   uri: 'mongodb://localhost/template-hapi',
