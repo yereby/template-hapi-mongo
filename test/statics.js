@@ -1,26 +1,26 @@
 const test = require('tap').test
-const server = require('../src/index')
+const server = require('../src/index.js')
 
-test('Point d\'entrée pour voir le favicon', t => {
+test('Before all', async () => {
+  await server.liftOff()
+})
+
+test('Get the favicon', async t => {
   const options = {
     method: 'GET',
     url: '/favicon.ico'
   }
 
-  server.inject(options, response => {
-    t.equal(response.statusCode, 200, 'status code = 200')
-    t.end()
-  })
+  const response = await server.inject(options)
+  t.equal(response.statusCode, 200, 'status code = 200')
 })
 
-test('Point d\'entrée pour un fichier qui n\'existe pas', t => {
+test('Favicon does not exists', async t => {
   const options = {
     method: 'GET',
     url: '/brout.pnj'
   }
 
-  server.inject(options, response => {
-    t.equal(response.statusCode, 404, 'status code = 404')
-    t.end()
-  })
+  const response = await server.inject(options)
+  t.equal(response.statusCode, 404, 'status code = 404')
 })
