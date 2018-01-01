@@ -1,86 +1,77 @@
 const Hapi = require('hapi')
-const good = require('good')
-const inert = require ('inert')
-const pug = require('pug')
-const vision = require('vision')
-const mongooseConnect = require('./plugins/connectDB')
 
-const PRODUCTION = process.env.NODE_ENV === 'production'
-
-const routes = require('./routes/index')
+process.on('unhandledRejection', error => {
+  console.log('Unhandled promise rejection', error)
+})
 
 ////////////
 // # PLUGINS
 ////////////
 
-// ## Options des plugins
-
-const goodOpts = {
-  reporters: {
-    console: [{
-      module: 'good-squeeze',
-      name: 'Squeeze',
-      args: [{ log: '*', response: '*' }]
-    }, {
-      module: 'good-console'
-    }, 'stdout']
-  }
-}
+// Good is not yet passed to hapi17
+// const goodOpts = {
+//   reporters: {
+//     console: [{
+//       module: 'good-squeeze',
+//       name: 'Squeeze',
+//       args: [{ log: '*', response: '*' }]
+//     }, {
+//       module: 'good-console'
+//     }, 'stdout']
+//   }
+// }
 
 const mongooseOpts = {
-  uri: 'mongodb://localhost/template',
+  uri: 'mongodb://localhost/template-hapi',
   options: {
     useMongoClient: true,
     connectTimeoutMS: 1000
   }
 }
 
-// ## Inscription des plugins
-
 const plugins = [
-  { register: good, options: (!module.parent ? goodOpts : null) }, // Process monitoring
-  inert, // Static file and directory handlers
-  vision
+  // { plugin: require('good'), options: goodOpts },
+  require ('inert'),
+  require('vision')
 ]
+
+const routes = require('./routes/index')
 
 /////////////////////////////
 // # Configuration du serveur
 /////////////////////////////
 
-const server = new Hapi.Server({debug: { request: ['warn']}})
+const servOptions = { port: process.env.PORT || 1337 }
+if (module.parent) { servOptions.debug = { request: ['warn'] }}
 
-// Options
-server.connection({ port: process.env.PORT || 1337 })
+const server = new Hapi.Server(servOptions)
 
-// Plugins
-server.register(plugins, (err) => { if (err) { throw err } })
+server.liftOff = async function () {
+  await server.register(plugins)
 
-// Views
-server.views({
-  engines: { pug },
-  path: './src/views',
-  compileOptions: {
-    pretty: true
-  },
-  isCached: PRODUCTION,
-  context: { PRODUCTION }
-})
-
-// Routes
-server.route(routes)
-
-// ## Lancement du serveur
-
-if (!module.parent) {
-  server.register({ register: mongooseConnect, options: mongooseOpts }, (err) => {
-    if (err) { throw err }
+  server.views({
+    engines: { pug: require('pug') },
+    path: './src/views',
+    compileOptions: { pretty: true },
+    isCached: process.env.NODE_ENV === 'production'
   })
 
-  server.start((err) => {
-    if (err) { throw err }
+  server.route(routes)
 
-    server.log(`Server started at ${server.info.uri}`)
-  })
+  try {
+    if (!module.parent) {
+      await server.register({ plugin: require('./plugins/DB'), options: mongooseOpts })
+      await server.start()
+      console.log(`Server started at ${server.info.uri}`)
+    } else {
+      await server.initialize()
+    }
+  } catch (err) { throw err }
 }
+
+// Server start
+void async function () {
+  if (!module.parent) { await server.liftOff() }
+}()
 
 module.exports = server

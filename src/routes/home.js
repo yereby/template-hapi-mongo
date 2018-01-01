@@ -1,9 +1,3 @@
-// ## Home page
+const Home = require('../controllers/home')
 
-module.exports = [{
-  method: 'GET',
-  path: '/',
-  handler: (request, reply) => {
-    reply.view('home/index.pug')
-  }
-}]
+module.exports = [{ method: 'GET', path: '/', handler: Home.list }]

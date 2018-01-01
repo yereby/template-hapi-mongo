@@ -2,3 +2,8 @@ extends ../layout
 
 block content
   p Welcome to the Hapijs template.
+  ul
+    each item in list
+      li #{item.name} — #{item.email} — #{item.scope}
+    else
+      li No user
