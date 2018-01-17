@@ -42,8 +42,7 @@
   ],
   "nyc": {
     "exclude": [
-      "src/plugins/DB.js",
-      "test"
+      "src/plugins/DB.js"
     ]
   }
 }
