@@ -1,12 +1,11 @@
 const Hapi = require('hapi')
 
+// Handeling unhandled rejections
 process.on('unhandledRejection', error => {
   console.log('Unhandled promise rejection', error)
 })
 
-////////////
-// # PLUGINS
-////////////
+// # Plugins
 
 // Good is not yet passed to hapi17
 // const goodOpts = {
@@ -35,17 +34,22 @@ const plugins = [
   require('vision')
 ]
 
-const routes = require('./routes/index')
-
-/////////////////////////////
-// # Configuration du serveur
-/////////////////////////////
+// # Server configuration
 
 const servOptions = { port: process.env.PORT || 1337 }
 if (module.parent) { servOptions.debug = { request: ['warn'] }}
 
 const server = new Hapi.Server(servOptions)
 
+/**
+ * Configure and launch the server.
+ *
+ * If the server is launched by the tests,
+ * we do not start it, we initialize it.
+ *
+ * If the server is launched by itself,
+ * we also register the database connection plugin
+ */
 server.liftOff = async function () {
   await server.register(plugins)
 
@@ -56,7 +60,7 @@ server.liftOff = async function () {
     isCached: process.env.NODE_ENV === 'production'
   })
 
-  server.route(routes)
+  server.route(require('./routes/index'))
 
   try {
     if (!module.parent) {
@@ -69,9 +73,14 @@ server.liftOff = async function () {
   } catch (err) { throw err }
 }
 
-// Server start
-void async function () {
-  if (!module.parent) { await server.liftOff() }
-}()
+// # Server start
+
+/**
+ * We immediately call liftOff only if
+ * the server is not launched from tests
+ */
+if (!module.parent) {
+  (async () => { await server.liftOff() })()
+}
 
 module.exports = server
