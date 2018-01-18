@@ -9,14 +9,17 @@ Writen in es6, it use Hapijs framework and those noticeable packages :
 - mongoose
 - tap
 
-## How to run
+## Requirement
 
-You need mongodb installed. For example with homebrew : `brew install mongodb`.  
+You need mongodb.  
+For example to install it with homebrew : `brew install mongodb`.  
 Then run the deamon like
 
 ```sh
-mongod
+mongod --dbpath /data/db --logpath /data/log/db.log --fork
 ```
+
+## How to run
 
 Install the packages, and start the project :
 
