@@ -1,7 +1,10 @@
 extends ../layout
 
 block content
-  p Welcome to the Hapijs template.
+  h1 Welcome to the Hapijs template.
+
+  h2 Here is the list of users
+
   ul
     each item in list
       li #{item.name} — #{item.email} — #{item.scope}
