@@ -53,18 +53,13 @@ module.exports.create = {
       scope: Joi.array()
     }
   },
-  handler: request => {
-    return User.create(request.payload)
-      .then()
-      .catch(err => {
-        switch (err.code) {
-        case 11000:
-        case 11001:
-          return Boom.conflict(err)
-        default:
-          return Boom.forbidden(err)
-        }
-      })
+  handler: async request => {
+    try {
+      return await User.create(request.payload)
+    } catch(err) {
+      if (err.code === 11000) { return Boom.conflict(err) }
+      return Boom.forbidden(err)
+    }
   }
 }
 
@@ -85,18 +80,19 @@ module.exports.set = {
       scope: Joi.array()
     }
   },
-  handler: request => {
-    return User.findOneAndUpdate({ _id: request.params.id }, request.payload, { new: true})
-      .then(user => user || Boom.notFound())
-      .catch(err => {
-        switch (err.code) {
-        case 11000:
-        case 11001:
-          return Boom.conflict(err)
-        default:
-          return Boom.forbidden(err)
-        }
-      })
+  handler: async request => {
+    try {
+      const user = await User.findOneAndUpdate(
+        { _id: request.params.id },
+        request.payload,
+        { new: true}
+      )
+
+      return user || Boom.notFound()
+    } catch(err) {
+      if (err.code === 11000) { return Boom.conflict(err) }
+      return Boom.forbidden(err)
+    }
   }
 }
 

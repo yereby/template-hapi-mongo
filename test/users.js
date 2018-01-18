@@ -44,6 +44,22 @@ test('Empty users list', async t => {
   t.equal(res.statusCode, 404, 'should return status code 404')
 })
 
+test('Users list with error', async t => {
+  const options = {
+    method: 'GET',
+    url: '/users'
+  }
+
+  const userMock = sinon.mock(User)
+  userMock.expects('find').rejects()
+
+  const res = await server.inject(options)
+  userMock.verify()
+  userMock.restore()
+
+  t.equal(res.statusCode, 500, 'should return status code 500')
+})
+
 test('Get one user', async t => {
   const options = {
     method: 'GET',
@@ -111,11 +127,19 @@ test('DELETE not allowed on users list', async t => {
   t.equal(res.statusCode, 405, 'should return status code 405 not allowed')
 })
 
+// # Create an user
+
+/*
+ * Create a user with no errors
+ *
+ * POST /users
+ * { email: fakeUser.email, name: fakeUser.name }
+ */
 test('Create a real user', async t => {
   const options = {
     method: 'POST',
     url: '/users',
-    payload: { email: 'me@me.comzkl', name: 'Jean kjh' }
+    payload: { email: fakeUser.email, name: fakeUser.name }
   }
 
   const userMock = sinon.mock(User)
@@ -127,14 +151,20 @@ test('Create a real user', async t => {
 
   t.equal(res.result._id, fakeUser._id, 'ID is ok')
   t.equal(res.result.name, fakeUser.name, 'Name is ok')
-  t.equal(res.result.scope, fakeUser.scope, 'Scope is ok')
+  t.equal(res.result.scope, fakeUser.scope, 'Scope is defined')
 })
 
+/*
+ * Create a user with mongodb duplicate error
+ *
+ * POST /users
+ * { email: fakeUser.email, name: fakeUser.name }
+ */
 test('Create a real user with errors', async t => {
   const options = {
     method: 'POST',
     url: '/users',
-    payload: { email: 'me@me.comzkl', name: 'Jean kjh' }
+    payload: { email: fakeUser.email, name: fakeUser.name }
   }
 
   const userMock = sinon.mock(User)
@@ -147,16 +177,21 @@ test('Create a real user with errors', async t => {
   t.equal(res.statusCode, 409, 'should return status code 409')
 })
 
-test('Create a real user with others errors', async t => {
+/*
+ * Create a user with mongodb insertion error
+ *
+ * POST /users
+ * { email: fakeUser.email, name: fakeUser.name }
+ */
+test('Create a real user with insertion error', async t => {
   const options = {
     method: 'POST',
     url: '/users',
-    payload: { email: 'me@me.comzkl', name: 'Jean kjh' }
+    payload: { email: fakeUser.email, name: fakeUser.name }
   }
 
   const userMock = sinon.mock(User)
   userMock.expects('create').rejects()
-
 
   const res = await server.inject(options)
   userMock.verify()
@@ -165,15 +200,9 @@ test('Create a real user with others errors', async t => {
   t.equal(res.statusCode, 403, 'should return status code 403')
 })
 
-test('POST an user with an id', async t => {
-  const options = {
-    method: 'POST',
-    url: '/users/' + fakeUser.id
-  }
+// # Update an user
 
-  const res = await server.inject(options)
-  t.equal(res.statusCode, 404, 'should return status code 404')
-})
+// # Remove an user
 
 test('Remove an user', async t => {
   const options = {
@@ -218,22 +247,6 @@ test('Remove an user call with error', async t => {
   const userMock = sinon.mock(User)
   userMock.expects('findOneAndRemove').withArgs({ _id: fakeUser.id })
     .rejects()
-
-  const res = await server.inject(options)
-  userMock.verify()
-  userMock.restore()
-
-  t.equal(res.statusCode, 500, 'should return status code 500')
-})
-
-test('Users list with error', async t => {
-  const options = {
-    method: 'GET',
-    url: '/users'
-  }
-
-  const userMock = sinon.mock(User)
-  userMock.expects('find').rejects()
 
   const res = await server.inject(options)
   userMock.verify()
