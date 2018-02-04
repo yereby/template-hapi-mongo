@@ -42,11 +42,10 @@ const server = new Hapi.Server(servOptions)
 /**
  * Configure and launch the server.
  *
- * If the server is launched by the tests,
- * we do not start it, we initialize it.
- *
- * If the server is launched by itself,
- * we also register the database connection plugin
+ * We register those plugins if the server is launched by
+ * itself and not form an other script (tests or electron) :
+ * - good
+ * - mongoDBconnect
  */
 server.liftOff = async function () {
   await server.register(plugins)
