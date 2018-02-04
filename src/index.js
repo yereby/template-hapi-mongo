@@ -37,21 +37,21 @@ const server = new Hapi.Server({ port: process.env.PORT || 1337 })
  * - mongoDBconnect
  */
 server.liftOff = async function () {
-  await server.register([
-    require ('inert'),
-    require('vision')
-  ])
-
-  server.views({
-    engines: { pug: require('pug') },
-    path: './src/views',
-    compileOptions: { pretty: true },
-    isCached: process.env.NODE_ENV === 'production'
-  })
-
-  server.route(require('./routes/index'))
-
   try {
+    await server.register([
+      require ('inert'),
+      require('vision')
+    ])
+
+    server.views({
+      engines: { pug: require('pug') },
+      path: './src/views',
+      compileOptions: { pretty: true },
+      isCached: process.env.NODE_ENV === 'production'
+    })
+
+    server.route(require('./routes/index'))
+
     if (!module.parent) {
       await server.register([
         { plugin: require('./plugins/DB'), options: mongooseOpts },
