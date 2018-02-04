@@ -6,7 +6,7 @@ module.exports.plugin = {
     db.connect(options.uri, options.options)
 
     db.connection.on('open', () => {
-      server.log('database', 'Connection established to mongodb.')
+      console.log('Connection established to mongodb.')
     })
 
     db.connection.on('error', (err) => { throw err })
