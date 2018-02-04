@@ -2,7 +2,7 @@ const Hapi = require('hapi')
 
 // Handeling unhandled rejections
 process.on('unhandledRejection', error => {
-  console.log('Unhandled promise rejection', error)
+  console.log('--- Unhandled promise rejection', error)
 })
 
 // # Plugins options
@@ -20,10 +20,8 @@ const goodOpts = {
 }
 
 const mongooseOpts = {
-  uri: 'mongodb://localhost/template-hapi',
-  options: {
-    connectTimeoutMS: 1000
-  }
+  uri: process.env.MONGOURI || 'mongodb://localhost/template-hapi',
+  options: { connectTimeoutMS: 1000 }
 }
 
 // # Server configuration
@@ -55,8 +53,10 @@ server.liftOff = async function () {
 
   try {
     if (!module.parent) {
-      await server.register({ plugin: require('./plugins/DB'), options: mongooseOpts })
-      await server.register({ plugin: require('good'), options: goodOpts })
+      await server.register([
+        { plugin: require('./plugins/DB'), options: mongooseOpts },
+        { plugin: require('good'), options: goodOpts }
+      ])
 
       await server.start()
       console.log(`Server started at ${server.info.uri}`)
@@ -73,7 +73,7 @@ server.liftOff = async function () {
  * the server is not launched from tests
  */
 if (!module.parent) {
-  (async () => { await server.liftOff() })()
+  (async () => await server.liftOff())()
 }
 
 module.exports = server
