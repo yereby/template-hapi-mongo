@@ -22,7 +22,6 @@ const goodOpts = {
 const mongooseOpts = {
   uri: 'mongodb://localhost/template-hapi',
   options: {
-    useMongoClient: true,
     connectTimeoutMS: 1000
   }
 }
