@@ -7,18 +7,17 @@ process.on('unhandledRejection', error => {
 
 // # Plugins
 
-// Good is not yet passed to hapi17
-// const goodOpts = {
-//   reporters: {
-//     console: [{
-//       module: 'good-squeeze',
-//       name: 'Squeeze',
-//       args: [{ log: '*', response: '*' }]
-//     }, {
-//       module: 'good-console'
-//     }, 'stdout']
-//   }
-// }
+const goodOpts = {
+  reporters: {
+    console: [{
+      module: 'good-squeeze',
+      name: 'Squeeze',
+      args: [{ log: '*', response: '*' }]
+    }, {
+      module: 'good-console'
+    }, 'stdout']
+  }
+}
 
 const mongooseOpts = {
   uri: 'mongodb://localhost/template-hapi',
@@ -29,7 +28,7 @@ const mongooseOpts = {
 }
 
 const plugins = [
-  // { plugin: require('good'), options: goodOpts },
+  { plugin: require('good'), options: goodOpts },
   require ('inert'),
   require('vision')
 ]
