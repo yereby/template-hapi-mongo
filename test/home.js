@@ -53,7 +53,7 @@ test('Home entry with errors', async t => {
   }
 
   const userMock = sinon.mock(User)
-  userMock.expects('find').rejects()
+  userMock.expects('find').throws()
 
   const response = await server.inject(options)
   userMock.verify()

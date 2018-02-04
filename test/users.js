@@ -51,7 +51,7 @@ test('Users list with error', async t => {
   }
 
   const userMock = sinon.mock(User)
-  userMock.expects('find').rejects()
+  userMock.expects('find').throws()
 
   const res = await server.inject(options)
   userMock.verify()
@@ -100,7 +100,7 @@ test('Get an user with errors', async t => {
   }
 
   const userMock = sinon.mock(User)
-  userMock.expects('findOne').rejects()
+  userMock.expects('findOne').throws()
 
   const res = await server.inject(options)
   userMock.verify()
@@ -168,7 +168,7 @@ test('Create a real user with errors', async t => {
   }
 
   const userMock = sinon.mock(User)
-  userMock.expects('create').rejects({ code: 11000 })
+  userMock.expects('create').throws({ code: 11000 })
 
   const res = await server.inject(options)
   userMock.verify()
@@ -191,7 +191,7 @@ test('Create a real user with insertion error', async t => {
   }
 
   const userMock = sinon.mock(User)
-  userMock.expects('create').rejects()
+  userMock.expects('create').throws()
 
   const res = await server.inject(options)
   userMock.verify()
@@ -246,7 +246,7 @@ test('Remove an user call with error', async t => {
 
   const userMock = sinon.mock(User)
   userMock.expects('findOneAndRemove').withArgs({ _id: fakeUser.id })
-    .rejects()
+    .throws()
 
   const res = await server.inject(options)
   userMock.verify()
