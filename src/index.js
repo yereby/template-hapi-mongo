@@ -5,7 +5,7 @@ process.on('unhandledRejection', error => {
   console.log('Unhandled promise rejection', error)
 })
 
-// # Plugins
+// # Plugins options
 
 const goodOpts = {
   reporters: {
@@ -26,11 +26,6 @@ const mongooseOpts = {
   }
 }
 
-const plugins = [
-  require ('inert'),
-  require('vision')
-]
-
 // # Server configuration
 
 const servOptions = { port: process.env.PORT || 1337 }
@@ -47,7 +42,10 @@ const server = new Hapi.Server(servOptions)
  * - mongoDBconnect
  */
 server.liftOff = async function () {
-  await server.register(plugins)
+  await server.register([
+    require ('inert'),
+    require('vision')
+  ])
 
   server.views({
     engines: { pug: require('pug') },
