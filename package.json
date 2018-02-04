@@ -17,24 +17,24 @@
   "dependencies": {
     "boom": "^7.1.1",
     "good": "^8.0.1",
-    "good-console": "^6.4.0",
+    "good-console": "^7.0.1",
     "good-squeeze": "^5.0.2",
     "hapi": "^17.1.1",
-    "inert": "^5.0.1",
-    "joi": "^13.0.2",
+    "inert": "^5.1.0",
+    "joi": "^13.1.2",
     "joi-objectid": "^2.0.0",
-    "mongoose": "^4.13.5",
+    "mongoose": "^5.0.3",
     "pug": "^2.0.0-rc.4",
-    "vision": "^5.2.0"
+    "vision": "^5.3.1"
   },
   "devDependencies": {
-    "eslint": "^4.12.0",
+    "eslint": "^4.17.0",
     "livereload": "^0.6.3",
-    "nodemon": "^1.12.1",
+    "nodemon": "^1.14.12",
     "pre-commit": "^1.2.2",
-    "sinon": "^4.1.2",
+    "sinon": "^4.2.2",
     "sinon-mongoose": "^2.0.2",
-    "tap": "^11.0.0"
+    "tap": "^11.1.0"
   },
   "pre-commit": [
     "lint",
