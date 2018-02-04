@@ -28,10 +28,7 @@ const mongooseOpts = {
 
 // # Server configuration
 
-const servOptions = { port: process.env.PORT || 1337 }
-if (module.parent) { servOptions.debug = { request: ['warn'] }}
-
-const server = new Hapi.Server(servOptions)
+const server = new Hapi.Server({ port: process.env.PORT || 1337 })
 
 /**
  * Configure and launch the server.
