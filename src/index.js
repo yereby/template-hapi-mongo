@@ -28,7 +28,6 @@ const mongooseOpts = {
 }
 
 const plugins = [
-  { plugin: require('good'), options: goodOpts },
   require ('inert'),
   require('vision')
 ]
@@ -64,6 +63,8 @@ server.liftOff = async function () {
   try {
     if (!module.parent) {
       await server.register({ plugin: require('./plugins/DB'), options: mongooseOpts })
+      await server.register({ plugin: require('good'), options: goodOpts })
+
       await server.start()
       console.log(`Server started at ${server.info.uri}`)
     } else {
