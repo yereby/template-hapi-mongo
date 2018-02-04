@@ -9,7 +9,7 @@ module.exports.plugin = {
       console.log('Connection established to mongodb.')
     })
 
-    db.connection.on('error', (err) => { throw err })
-    db.connection.on('close', (err) => { throw err })
+    db.connection.on('error', err => { throw err })
+    db.connection.on('close', err => { throw err })
   }
 }
