@@ -1,8 +1,8 @@
 const db = require('mongoose')
 
 module.exports.plugin = {
-  name: 'hapiMongooseConnect',
-  register: (server, options) => {
+  name: 'mongoDBConnect',
+  register: async (server, options) => {
     db.connect(options.uri, options.options)
 
     db.connection.on('open', () => {
