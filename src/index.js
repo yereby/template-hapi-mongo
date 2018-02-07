@@ -60,7 +60,7 @@ server.liftOff = async function () {
       ])
 
       await server.start()
-      console.log(`Server started at ${server.info.uri}`)
+      server.log('server', `Server started at ${server.info.uri}`)
     } else {
       await server.initialize()
     }
