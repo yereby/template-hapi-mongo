@@ -14,7 +14,8 @@ const goodOpts = {
       name: 'Squeeze',
       args: [{ log: '*', response: '*' }]
     }, {
-      module: 'good-console'
+      module: 'good-console',
+      args: [{ format: 'HH:mm:ss.SSS' }]
     }, 'stdout']
   }
 }
