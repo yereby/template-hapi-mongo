@@ -1,5 +1,7 @@
 const Hapi = require('hapi')
 
+const isStandAlone = require.main === module
+
 // # Plugins options
 
 const goodOpts = {
@@ -48,7 +50,7 @@ server.liftOff = async function () {
 
     server.route(require('./routes/index'))
 
-    if (!module.parent) {
+    if (isStandAlone) {
       await server.register([
         { plugin: require('./plugins/DB'), options: mongooseOpts },
         { plugin: require('good'), options: goodOpts }
@@ -68,7 +70,7 @@ server.liftOff = async function () {
  * We immediately call liftOff only if
  * the server is not launched from tests
  */
-if (!module.parent) {
+if (isStandAlone) {
   (async () => await server.liftOff())()
 }
 
