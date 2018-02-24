@@ -1,10 +1,5 @@
 const Hapi = require('hapi')
 
-// Handeling unhandled rejections
-process.on('unhandledRejection', error => {
-  console.log('--- Unhandled promise rejection', error)
-})
-
 // # Plugins options
 
 const goodOpts = {
@@ -76,5 +71,10 @@ server.liftOff = async function () {
 if (!module.parent) {
   (async () => await server.liftOff())()
 }
+
+// Handeling unhandled rejections
+process.on('unhandledRejection', error => {
+  console.log('--- Unhandled promise rejection', error)
+})
 
 module.exports = server
