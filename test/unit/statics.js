@@ -1,5 +1,5 @@
 const test = require('tap').test
-const server = require('../src/index.js')
+const server = require('../../src/index.js')
 
 test('Before all', async () => {
   await server.liftOff()

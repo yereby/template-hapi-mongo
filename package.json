@@ -6,12 +6,12 @@
   "description": "Template project to use hapijs",
   "main": "src/index.js",
   "scripts": {
-    "cover": "tap test/*.js --cov --coverage-report=lcov",
+    "cover": "tap test/unit/*.js --cov --coverage-report=lcov",
     "livereload": "livereload . -e pug -w 1700",
     "lint": "eslint .",
     "start": "nodemon -e js,pug src/index.js",
-    "test": "tap -b -- test/*.js",
-    "test:p": "tap -J --reporter=nyan -- test/*.js",
+    "test": "tap -b -- test/unit/*.js",
+    "test:p": "tap -J --reporter=nyan -- test/unit/*.js",
     "test:w": "nodemon --exec npm test"
   },
   "dependencies": {
