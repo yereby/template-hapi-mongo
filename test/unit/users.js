@@ -109,14 +109,6 @@ test('Get an user with errors', async t => {
   t.equal(res.statusCode, 500, 'should return status code 500')
 })
 
-test('Use virtuals methods', t => {
-  const userNewMock = new User(fakeUser)
-  t.equal(userNewMock.firstname, fakeUser.firstname, 'Ok pour le prénom')
-  t.equal(userNewMock.lastname, fakeUser.lastname, 'Ok pour le nom')
-
-  t.end()
-})
-
 test('DELETE not allowed on users list', async t => {
   const options = {
     method: 'DELETE',
