@@ -27,6 +27,13 @@ const mongooseOpts = {
 
 const server = new Hapi.Server({ port: process.env.PORT || 1337 })
 
+const secretKey = process.env.SECRET_KEY
+server.bind({ secretKey })
+
+async function validate(decoded, request) {
+  return { isValid: true }
+}
+
 /**
  * Configure and launch the server.
  *
@@ -38,9 +45,18 @@ const server = new Hapi.Server({ port: process.env.PORT || 1337 })
 server.liftOff = async function () {
   try {
     await server.register([
+      require('hapi-auth-jwt2'),
       require ('inert'),
-      require('vision')
+      require('vision'),
     ])
+
+    server.auth.strategy('jwt', 'jwt', {
+      key: secretKey,
+      validate: validate,
+      verifyOptions: { algorithms: [ 'HS256' ] }
+    })
+
+    server.auth.default('jwt')
 
     server.views({
       engines: { pug: require('pug') },
