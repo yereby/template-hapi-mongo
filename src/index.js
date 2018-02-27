@@ -1,4 +1,5 @@
 const Hapi = require('hapi')
+if (process.env.NODE_ENV !== 'production') { require('dotenv').config() }
 
 const isStandAlone = require.main === module
 

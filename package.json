@@ -28,6 +28,7 @@
     "vision": "^5.3.1"
   },
   "devDependencies": {
+    "dotenv": "^5.0.1",
     "eslint": "^4.17.0",
     "faker": "^4.1.0",
     "livereload": "^0.6.3",
