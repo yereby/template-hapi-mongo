@@ -50,6 +50,17 @@ server.liftOff = async function () {
       require('vision'),
     ])
 
+    server.ext('onPreResponse', (request, h) => {
+      const response = request.response
+      if (response.isBoom) { return h.continue }
+
+      if (request.auth.isAuthenticated) {
+        response.headers.Authorization = request.auth.token
+      }
+
+      return h.continue
+    })
+
     server.auth.strategy('jwt', 'jwt', {
       key: secretKey,
       validate: validate,
