@@ -30,8 +30,21 @@ const server = new Hapi.Server({ port: process.env.PORT || 1337 })
 const secretKey = process.env.SECRET_KEY
 server.bind({ secretKey })
 
-async function validate() {
-  return { isValid: true }
+const knownEmails = [
+  { email: 'moi@moi.com', iat: 1519863778 },
+  { email: 'toi@toi.com', iat: 1519862290 },
+]
+
+async function validate(decoded, request) {
+  const email = knownEmails.filter(email => email.email === decoded.email)
+
+  console.log('Decoded', decoded)
+  console.log('Email', email)
+
+  if (email.length === 1 && email[0].iat === decoded.iat) {
+    return { isValid: true }
+  }
+  return { isValid: false }
 }
 
 /**
