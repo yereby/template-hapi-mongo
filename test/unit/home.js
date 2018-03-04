@@ -3,7 +3,7 @@ const sinon = require('sinon')
 require('sinon-mongoose')
 
 const server = require('../../src/index')
-const User = require('../../src/models/users')
+const User = require('../../src/models/user')
 
 const fixtureUsers = require('../fixtures/users').fakeUser
 

@@ -2,7 +2,7 @@ const Boom = require('boom')
 const Joi = require('joi')
 Joi.objectId = require('joi-objectid')(Joi)
 
-const User = require('../models/users')
+const User = require('../models/user')
 
 /**
  * Show the list of all users
@@ -10,7 +10,7 @@ const User = require('../models/users')
  * @example GET /users/
  * @return {Object} The list of users || status code 404
  */
-module.exports.list = {
+module.exports.list =  {
   tags: ['api'],
   handler: () => {
     return User.find({})

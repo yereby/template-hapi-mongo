@@ -1,6 +1,6 @@
 const Boom = require('boom')
 
-const User = require('../models/users')
+const User = require('../models/user')
 
 /**
  * Show the list of all users
