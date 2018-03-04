@@ -2,10 +2,7 @@ const test = require('tap').test
 const sinon = require('sinon')
 require('sinon-mongoose')
 
-const server = require('../../src/index')
-const User = require('../../src/models/user')
-
-const fixtureUsers = require('../fixtures/users').fakeUser
+const { server, User, fixtureUsers } = require('../lib/init.js')
 
 test('Before all', async () => {
   await server.liftOff()
