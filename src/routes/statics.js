@@ -1,7 +1,11 @@
 module.exports = [{
-  method: 'GET', path: '/{param*}', handler: {
-    directory: {
-      path: 'public'
+  method: 'GET', path: '/{param*}',
+  options: {
+    auth: false,
+    handler: {
+      directory: {
+        path: 'public'
+      }
     }
   }
 }]

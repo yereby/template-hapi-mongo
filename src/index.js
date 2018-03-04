@@ -30,7 +30,7 @@ const server = new Hapi.Server({ port: process.env.PORT || 1337 })
 const secretKey = process.env.SECRET_KEY
 server.bind({ secretKey })
 
-async function validate(decoded, request) {
+async function validate() {
   return { isValid: true }
 }
 

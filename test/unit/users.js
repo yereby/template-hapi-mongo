@@ -2,10 +2,9 @@ const test = require('tap').test
 const sinon = require('sinon')
 require('sinon-mongoose')
 
-const server = require('../../src/index.js')
-const User = require('../../src/models/users')
-
-const fakeUser = require('../fixtures/users').fakeUser[0]
+const { server, User, fixtureUsers, tokens } = require('../lib/init.js')
+const token = tokens.generateToken(fixtureUsers[0].email, process.env.SECRET_KEY)
+const fakeUser = fixtureUsers[0]
 
 test('Before all', async () => {
   await server.liftOff()
@@ -14,7 +13,8 @@ test('Before all', async () => {
 test('Two users list', async t => {
   const options = {
     method: 'GET',
-    url: '/users'
+    url: '/users',
+    headers: { 'Authorization': `Bearer ${token}` },
   }
 
   const userMock = sinon.mock(User)
@@ -31,7 +31,8 @@ test('Two users list', async t => {
 test('Empty users list', async t => {
   const options = {
     method: 'GET',
-    url: '/users'
+    url: '/users',
+    headers: { 'Authorization': `Bearer ${token}` },
   }
 
   const userMock = sinon.mock(User)
@@ -47,7 +48,8 @@ test('Empty users list', async t => {
 test('Users list with error', async t => {
   const options = {
     method: 'GET',
-    url: '/users'
+    url: '/users',
+    headers: { 'Authorization': `Bearer ${token}` },
   }
 
   const userMock = sinon.mock(User)
@@ -63,7 +65,8 @@ test('Users list with error', async t => {
 test('Get one user', async t => {
   const options = {
     method: 'GET',
-    url: '/users/' + fakeUser.id
+    url: '/users/' + fakeUser.id,
+    headers: { 'Authorization': `Bearer ${token}` },
   }
 
   const userMock = sinon.mock(User)
@@ -80,7 +83,8 @@ test('Get one user', async t => {
 test('Get an user that does not exists', async t => {
   const options = {
     method: 'GET',
-    url: '/users/' + fakeUser.id
+    url: '/users/' + fakeUser.id,
+    headers: { 'Authorization': `Bearer ${token}` },
   }
 
   const userMock = sinon.mock(User)
@@ -96,7 +100,8 @@ test('Get an user that does not exists', async t => {
 test('Get an user with errors', async t => {
   const options = {
     method: 'GET',
-    url: '/users/' + fakeUser.id
+    url: '/users/' + fakeUser.id,
+    headers: { 'Authorization': `Bearer ${token}` },
   }
 
   const userMock = sinon.mock(User)
@@ -112,7 +117,8 @@ test('Get an user with errors', async t => {
 test('DELETE not allowed on users list', async t => {
   const options = {
     method: 'DELETE',
-    url: '/users'
+    url: '/users',
+    headers: { 'Authorization': `Bearer ${token}` },
   }
 
   const res = await server.inject(options)
@@ -131,7 +137,8 @@ test('Create a real user', async t => {
   const options = {
     method: 'POST',
     url: '/users',
-    payload: { email: fakeUser.email, name: fakeUser.name }
+    headers: { 'Authorization': `Bearer ${token}` },
+    payload: { email: fakeUser.email, name: fakeUser.name },
   }
 
   const userMock = sinon.mock(User)
@@ -156,7 +163,8 @@ test('Create a real user with errors', async t => {
   const options = {
     method: 'POST',
     url: '/users',
-    payload: { email: fakeUser.email, name: fakeUser.name }
+    headers: { 'Authorization': `Bearer ${token}` },
+    payload: { email: fakeUser.email, name: fakeUser.name },
   }
 
   const userMock = sinon.mock(User)
@@ -179,7 +187,8 @@ test('Create a real user with insertion error', async t => {
   const options = {
     method: 'POST',
     url: '/users',
-    payload: { email: fakeUser.email, name: fakeUser.name }
+    headers: { 'Authorization': `Bearer ${token}` },
+    payload: { email: fakeUser.email, name: fakeUser.name },
   }
 
   const userMock = sinon.mock(User)
@@ -199,7 +208,8 @@ test('Create a real user with insertion error', async t => {
 test('Remove an user', async t => {
   const options = {
     method: 'DELETE',
-    url: '/users/' + fakeUser.id
+    url: '/users/' + fakeUser.id,
+    headers: { 'Authorization': `Bearer ${token}` },
   }
 
   const userMock = sinon.mock(User)
@@ -216,7 +226,8 @@ test('Remove an user', async t => {
 test('Remove an user that does not exists', async t => {
   const options = {
     method: 'DELETE',
-    url: '/users/' + fakeUser.id
+    url: '/users/' + fakeUser.id,
+    headers: { 'Authorization': `Bearer ${token}` },
   }
 
   const userMock = sinon.mock(User)
@@ -233,7 +244,8 @@ test('Remove an user that does not exists', async t => {
 test('Remove an user call with error', async t => {
   const options = {
     method: 'DELETE',
-    url: '/users/' + fakeUser.id
+    url: '/users/' + fakeUser.id,
+    headers: { 'Authorization': `Bearer ${token}` },
   }
 
   const userMock = sinon.mock(User)

@@ -2,7 +2,8 @@ const test = require('tap').test
 const sinon = require('sinon')
 require('sinon-mongoose')
 
-const { server, User, fixtureUsers } = require('../lib/init.js')
+const { server, User, fixtureUsers, tokens } = require('../lib/init.js')
+const token = tokens.generateToken(fixtureUsers[0].email, process.env.SECRET_KEY)
 
 test('Before all', async () => {
   await server.liftOff()
@@ -11,7 +12,8 @@ test('Before all', async () => {
 test('Home entry with users', async t => {
   const options = {
     method: 'GET',
-    url: '/'
+    url: '/',
+    headers: { 'Authorization': `Bearer ${token}` },
   }
 
   const userMock = sinon.mock(User)
@@ -28,7 +30,8 @@ test('Home entry with users', async t => {
 test('Home entry with no users', async t => {
   const options = {
     method: 'GET',
-    url: '/'
+    url: '/',
+    headers: { 'Authorization': `Bearer ${token}` },
   }
 
   const userMock = sinon.mock(User)
@@ -46,7 +49,8 @@ test('Home entry with no users', async t => {
 test('Home entry with errors', async t => {
   const options = {
     method: 'GET',
-    url: '/'
+    url: '/',
+    headers: { 'Authorization': `Bearer ${token}` },
   }
 
   const userMock = sinon.mock(User)

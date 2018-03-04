@@ -11,6 +11,8 @@ function generateToken(email, key) {
   return token
 }
 
+module.exports.generateToken = generateToken
+
 module.exports.ask = {
   tags: ['api'],
   auth: false,
