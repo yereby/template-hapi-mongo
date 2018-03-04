@@ -10,10 +10,13 @@ const User = require('../models/users')
  * @example GET /users/
  * @return {Object} The list of users || status code 404
  */
-module.exports.list = () => {
-  return User.find({})
-    .then(users => users.length ? users : Boom.notFound())
-    .catch(err => Boom.badImplementation(err))
+module.exports.list = {
+  tags: ['api'],
+  handler: () => {
+    return User.find({})
+      .then(users => users.length ? users : Boom.notFound())
+      .catch(err => Boom.badImplementation(err))
+  }
 }
 
 /**
@@ -24,6 +27,7 @@ module.exports.list = () => {
  * @return {Object} User wanted || status code 404
  */
 module.exports.one = {
+  tags: ['api'],
   validate: {
     params: {
       id: Joi.objectId()
@@ -46,6 +50,7 @@ module.exports.one = {
  * @return {Object} User created || Some errors
  */
 module.exports.create = {
+  tags: ['api'],
   validate: {
     payload: {
       email: Joi.string().email().required(),
@@ -71,6 +76,7 @@ module.exports.create = {
  * @return {Object} User removed || status code 404
  */
 module.exports.set = {
+  tags: ['api'],
   validate: {
     params: {
       id: Joi.objectId()
@@ -104,6 +110,7 @@ module.exports.set = {
  * @return {Object} User removed || status code 404
  */
 module.exports.remove = {
+  tags: ['api'],
   validate: {
     params: {
       id: Joi.objectId()

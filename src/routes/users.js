@@ -4,7 +4,7 @@ const Users = require('../controllers/users')
 // ## Users list
 
 module.exports = [
-  { method: 'GET', path: '/users', handler: Users.list },
+  { method: 'GET', path: '/users', options: Users.list },
   { method: 'POST', path: '/users', options: Users.create },
   { method: 'DELETE', path: '/users', handler: Utils.notAllowed },
 

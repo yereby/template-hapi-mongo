@@ -12,6 +12,7 @@ function generateToken(email, key) {
 }
 
 module.exports.ask = {
+  tags: ['api'],
   auth: false,
   validate: {
     payload: {
