@@ -33,6 +33,7 @@
     "dotenv": "^5.0.1",
     "eslint": "^4.17.0",
     "faker": "^4.1.0",
+    "hapi-swagger": "^9.1.1",
     "livereload": "^0.6.3",
     "nodemon": "^1.14.12",
     "pre-commit": "^1.2.2",

@@ -48,6 +48,7 @@ server.liftOff = async function () {
       require('hapi-auth-jwt2'),
       require ('inert'),
       require('vision'),
+      require('hapi-swagger'),
     ])
 
     server.ext('onPreResponse', (request, h) => {
