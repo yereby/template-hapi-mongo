@@ -30,8 +30,14 @@ const server = new Hapi.Server({ port: process.env.PORT || 1337 })
 const secretKey = process.env.SECRET_KEY
 server.bind({ secretKey })
 
-async function validate() {
-  return { isValid: true }
+async function validate(decoded) {
+  try {
+    const Auth = require('./models/auth')
+    const result = await Auth.find({ email: decoded.email, iat: decoded.iat })
+
+    if (!result.length) { return { isValid: false } }
+    return { isValid: true }
+  } catch(err) { throw err }
 }
 
 /**

@@ -1,6 +1,7 @@
 const Joi = require('joi')
-
 const JWT = require('jsonwebtoken')
+
+const Auth = require('../models/auth')
 
 function generateToken(email, key) {
   const nowInSeconds = Math.round(new Date().getTime() / 1000)
@@ -21,10 +22,34 @@ module.exports.ask = {
       email: Joi.string().email().required(),
     }
   },
-  handler: function (request) {
+  handler: async function (request) {
     const email = request.payload.email
 
     const token = generateToken(email, this.secretKey)
-    return { token }
+    const iat = JWT.decode(token).iat
+
+    try {
+      await Auth.create({ email, iat })
+      return { token, iat }
+    } catch(err) { throw err }
+  }
+}
+
+module.exports.revoke = {
+  tags: ['api'],
+  auth: false,
+  validate: {
+    payload: {
+      email: Joi.string().email().required(),
+      token: Joi.string().required(),
+    }
+  },
+  handler: async function (request) {
+    const { email, token } = request.payload
+    const iat = JWT.decode(token).iat
+
+    try {
+      return await Auth.remove({ email, iat })
+    } catch(err) { throw err }
   }
 }
