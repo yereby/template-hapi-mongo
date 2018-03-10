@@ -2,7 +2,7 @@ const test = require('tap').test
 const sinon = require('sinon')
 require('sinon-mongoose')
 
-const { server, User, fixtureUsers, tokens } = require('../lib/init.js')
+const { server, User, Auth, fixtureUsers, tokens } = require('../lib/init.js')
 const token = tokens.generateToken(fixtureUsers[0].email, process.env.SECRET_KEY)
 const fakeUser = fixtureUsers[0]
 
@@ -18,14 +18,18 @@ test('Two users list', async t => {
   }
 
   const userMock = sinon.mock(User)
-  userMock.expects('find').resolves([fakeUser, fakeUser])
+  const authMock = sinon.mock(Auth)
+  userMock.expects('find').resolves(fixtureUsers)
+  authMock.expects('findOne').resolves(fixtureUsers[0])
 
   const res = await server.inject(options)
   userMock.verify()
   userMock.restore()
+  authMock.verify()
+  authMock.restore()
 
   t.equal(res.statusCode, 200, 'should return status code 200')
-  t.equal(res.result.length, 2, 'should return 2 results')
+  t.equal(res.result.length, 1, 'should return 1 result')
 })
 
 test('Empty users list', async t => {
@@ -36,11 +40,15 @@ test('Empty users list', async t => {
   }
 
   const userMock = sinon.mock(User)
+  const authMock = sinon.mock(Auth)
   userMock.expects('find').resolves([])
+  authMock.expects('findOne').resolves(fixtureUsers[0])
 
   const res = await server.inject(options)
   userMock.verify()
   userMock.restore()
+  authMock.verify()
+  authMock.restore()
 
   t.equal(res.statusCode, 404, 'should return status code 404')
 })
@@ -53,11 +61,15 @@ test('Users list with error', async t => {
   }
 
   const userMock = sinon.mock(User)
+  const authMock = sinon.mock(Auth)
   userMock.expects('find').throws()
+  authMock.expects('findOne').resolves(fixtureUsers[0])
 
   const res = await server.inject(options)
   userMock.verify()
   userMock.restore()
+  authMock.verify()
+  authMock.restore()
 
   t.equal(res.statusCode, 500, 'should return status code 500')
 })
@@ -70,11 +82,15 @@ test('Get one user', async t => {
   }
 
   const userMock = sinon.mock(User)
-  userMock.expects('findOne').resolves(fakeUser)
+  const authMock = sinon.mock(Auth)
+  userMock.expects('findOne').resolves(fixtureUsers[0])
+  authMock.expects('findOne').resolves(fixtureUsers[0])
 
   const res = await server.inject(options)
   userMock.verify()
   userMock.restore()
+  authMock.verify()
+  authMock.restore()
 
   t.equal(res.statusCode, 200, 'should return status code 200')
   t.equal(res.result.name, fakeUser.name, 'User exists')
@@ -88,11 +104,15 @@ test('Get an user that does not exists', async t => {
   }
 
   const userMock = sinon.mock(User)
+  const authMock = sinon.mock(Auth)
   userMock.expects('findOne').resolves(null)
+  authMock.expects('findOne').resolves(fixtureUsers[0])
 
   const res = await server.inject(options)
   userMock.verify()
   userMock.restore()
+  authMock.verify()
+  authMock.restore()
 
   t.equal(res.statusCode, 404, 'should return status code 404')
 })
@@ -105,11 +125,15 @@ test('Get an user with errors', async t => {
   }
 
   const userMock = sinon.mock(User)
+  const authMock = sinon.mock(Auth)
   userMock.expects('findOne').throws()
+  authMock.expects('findOne').resolves(fixtureUsers[0])
 
   const res = await server.inject(options)
   userMock.verify()
   userMock.restore()
+  authMock.verify()
+  authMock.restore()
 
   t.equal(res.statusCode, 500, 'should return status code 500')
 })
@@ -121,7 +145,13 @@ test('DELETE not allowed on users list', async t => {
     headers: { 'Authorization': `Bearer ${token}` },
   }
 
+  const authMock = sinon.mock(Auth)
+  authMock.expects('findOne').resolves(fixtureUsers[0])
+
   const res = await server.inject(options)
+  authMock.verify()
+  authMock.restore()
+
   t.equal(res.statusCode, 405, 'should return status code 405 not allowed')
 })
 
@@ -142,11 +172,15 @@ test('Create a real user', async t => {
   }
 
   const userMock = sinon.mock(User)
-  userMock.expects('create').resolves(fakeUser)
+  const authMock = sinon.mock(Auth)
+  userMock.expects('create').resolves(fixtureUsers[0])
+  authMock.expects('findOne').resolves(fixtureUsers[0])
 
-  const res = await server.inject(options)
+  const res= await server.inject(options)
   userMock.verify()
   userMock.restore()
+  authMock.verify()
+  authMock.restore()
 
   t.equal(res.result._id, fakeUser._id, 'ID is ok')
   t.equal(res.result.name, fakeUser.name, 'Name is ok')
@@ -168,11 +202,15 @@ test('Create a real user with errors', async t => {
   }
 
   const userMock = sinon.mock(User)
+  const authMock = sinon.mock(Auth)
   userMock.expects('create').throws({ code: 11000 })
+  authMock.expects('findOne').resolves(fixtureUsers[0])
 
   const res = await server.inject(options)
   userMock.verify()
   userMock.restore()
+  authMock.verify()
+  authMock.restore()
 
   t.equal(res.statusCode, 409, 'should return status code 409')
 })
@@ -192,11 +230,15 @@ test('Create a real user with insertion error', async t => {
   }
 
   const userMock = sinon.mock(User)
+  const authMock = sinon.mock(Auth)
   userMock.expects('create').throws()
+  authMock.expects('findOne').resolves(fixtureUsers[0])
 
   const res = await server.inject(options)
   userMock.verify()
   userMock.restore()
+  authMock.verify()
+  authMock.restore()
 
   t.equal(res.statusCode, 403, 'should return status code 403')
 })
@@ -213,12 +255,16 @@ test('Remove an user', async t => {
   }
 
   const userMock = sinon.mock(User)
-  userMock.expects('findOneAndRemove').withArgs({ _id: fakeUser.id })
-    .resolves(fakeUser)
+  const authMock = sinon.mock(Auth)
+  userMock.expects('findOneAndRemove').withArgs({ _id: fixtureUsers[0].id })
+    .resolves(fixtureUsers[0])
+  authMock.expects('findOne').resolves(fixtureUsers[0])
 
   const res = await server.inject(options)
   userMock.verify()
   userMock.restore()
+  authMock.verify()
+  authMock.restore()
 
   t.equal(res.statusCode, 200, 'should return status code 200')
 })
@@ -231,12 +277,16 @@ test('Remove an user that does not exists', async t => {
   }
 
   const userMock = sinon.mock(User)
-  userMock.expects('findOneAndRemove').withArgs({ _id: fakeUser.id })
+  const authMock = sinon.mock(Auth)
+  userMock.expects('findOneAndRemove').withArgs({ _id: fixtureUsers[0].id })
     .resolves(null)
+  authMock.expects('findOne').resolves(fixtureUsers[0])
 
   const res = await server.inject(options)
   userMock.verify()
   userMock.restore()
+  authMock.verify()
+  authMock.restore()
 
   t.equal(res.statusCode, 404, 'should return status code 404')
 })
@@ -249,12 +299,16 @@ test('Remove an user call with error', async t => {
   }
 
   const userMock = sinon.mock(User)
-  userMock.expects('findOneAndRemove').withArgs({ _id: fakeUser.id })
+  const authMock = sinon.mock(Auth)
+  userMock.expects('findOneAndRemove').withArgs({ _id: fixtureUsers[0].id })
     .throws()
+  authMock.expects('findOne').resolves(fixtureUsers[0])
 
   const res = await server.inject(options)
   userMock.verify()
   userMock.restore()
+  authMock.verify()
+  authMock.restore()
 
   t.equal(res.statusCode, 500, 'should return status code 500')
 })

@@ -34,9 +34,9 @@ server.bind({ secretKey })
 async function validate(decoded) {
   try {
     const Auth = require('./models/auth')
-    const result = await Auth.find({ email: decoded.email, iat: decoded.iat })
+    const result = await Auth.findOne({ email: decoded.email, iat: decoded.iat })
 
-    if (!result.length) { return { isValid: false } }
+    if (!result) { return { isValid: false } }
     return { isValid: true }
   } catch(err) { throw err }
 }
