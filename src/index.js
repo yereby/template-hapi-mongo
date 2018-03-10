@@ -1,4 +1,5 @@
 const Hapi = require('hapi')
+
 if (process.env.NODE_ENV !== 'production') { require('dotenv').config() }
 
 const isStandAlone = require.main === module
@@ -27,7 +28,7 @@ const mongooseOpts = {
 
 const server = new Hapi.Server({ port: process.env.PORT || 1337 })
 
-const secretKey = process.env.SECRET_KEY
+const secretKey = process.env.SECRET_KEY || 'Choose a secured Secret Key'
 server.bind({ secretKey })
 
 async function validate(decoded) {
