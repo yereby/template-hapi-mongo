@@ -27,6 +27,17 @@ const mongooseOpts = {
 // # Server configuration
 
 const server = new Hapi.Server({ port: process.env.PORT || 1337 })
+const plugins = [
+  require('hapi-auth-jwt2'),
+  require ('inert'),
+  require('vision'),
+  require('hapi-swagger'),
+]
+
+const pluginsStandAlone = [
+  { plugin: require('./plugins/DB'), options: mongooseOpts },
+  { plugin: require('good'), options: goodOpts }
+]
 
 const secretKey = process.env.SECRET_KEY || 'Choose a secured Secret Key'
 server.bind({ secretKey })
@@ -41,6 +52,18 @@ async function validate(decoded) {
   } catch(err) { throw err }
 }
 
+// Add token to the response
+server.ext('onPreResponse', (request, h) => {
+  const response = request.response
+  if (response.isBoom) { return h.continue }
+
+  if (request.auth.isAuthenticated) {
+    response.headers.Authorization = request.auth.token
+  }
+
+  return h.continue
+})
+
 /**
  * Configure and launch the server.
  *
@@ -51,23 +74,7 @@ async function validate(decoded) {
  */
 server.liftOff = async function () {
   try {
-    await server.register([
-      require('hapi-auth-jwt2'),
-      require ('inert'),
-      require('vision'),
-      require('hapi-swagger'),
-    ])
-
-    server.ext('onPreResponse', (request, h) => {
-      const response = request.response
-      if (response.isBoom) { return h.continue }
-
-      if (request.auth.isAuthenticated) {
-        response.headers.Authorization = request.auth.token
-      }
-
-      return h.continue
-    })
+    await server.register(plugins)
 
     server.auth.strategy('jwt', 'jwt', {
       key: secretKey,
@@ -87,10 +94,7 @@ server.liftOff = async function () {
     server.route(require('./routes/index'))
 
     if (isStandAlone) {
-      await server.register([
-        { plugin: require('./plugins/DB'), options: mongooseOpts },
-        { plugin: require('good'), options: goodOpts }
-      ])
+      await server.register(pluginsStandAlone)
 
       await server.start()
       server.log('server', `Server started at ${server.info.uri}`)
