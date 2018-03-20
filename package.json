@@ -11,8 +11,9 @@
     "lint": "eslint .",
     "start": "nodemon -e js,pug src/index.js",
     "test": "tap -b -- test/unit/*.js",
+    "test:J": "tap -bJ -- test/unit/*.js",
     "test:p": "tap -J --reporter=nyan -- test/unit/*.js",
-    "test:w": "nodemon --exec npm test"
+    "test:w": "nodemon --exec npm run test:J"
   },
   "dependencies": {
     "boom": "^7.1.1",
