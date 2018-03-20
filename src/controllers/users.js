@@ -51,11 +51,12 @@ module.exports.one = {
  */
 module.exports.create = {
   tags: ['api'],
+  auth: false,
   validate: {
     payload: {
       email: Joi.string().email().required(),
       name: Joi.string(),
-      scope: Joi.array()
+      scope: Joi.array().items(['user', 'admin']).default(['user'])
     }
   },
   handler: async request => {
@@ -83,7 +84,7 @@ module.exports.set = {
     },
     payload: {
       name: Joi.string(),
-      scope: Joi.array()
+      scope: Joi.array().items(['user', 'admin'])
     }
   },
   handler: async request => {
