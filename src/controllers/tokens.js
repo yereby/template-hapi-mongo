@@ -5,7 +5,7 @@ const Auth = require('../models/auth')
 
 function generateToken(email, key) {
   const nowInSeconds = Math.round(new Date().getTime() / 1000)
-  const exp = nowInSeconds + Number(process.env.TOKEN_EXPIRATION_SECONDS)
+  const exp = nowInSeconds + Number(process.env.TOKEN_EXPIRATION_SECONDS || 10)
   const obj = { email, admin: false, exp }
 
   const token = JWT.sign(obj, key)
