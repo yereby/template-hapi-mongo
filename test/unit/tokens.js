@@ -5,7 +5,9 @@ require('sinon-mongoose')
 const { server, Auth, fixtureUsers } = require('../lib/init.js')
 
 test('Before all', async () => {
-  await server.liftOff()
+  server.bind({ secretKey: 'TestingSecretKey' })
+  server.route(require('../../src/routes/tokens'))
+  await server.initialize()
 })
 
 test('Ask a token', async t => {

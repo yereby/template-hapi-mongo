@@ -1,8 +1,11 @@
 const test = require('tap').test
-const server = require('../../src/index.js')
+
+const { server } = require('../lib/init.js')
 
 test('Before all', async () => {
-  await server.liftOff()
+  await server.register(require('inert'))
+  server.route(require('../../src/routes/statics'))
+  await server.initialize()
 })
 
 test('Get the favicon', async t => {
