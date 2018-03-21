@@ -194,6 +194,53 @@ test('Create a real user with insertion error', async t => {
 
 // # Update an user
 
+test('Update an existing user', async t => {
+  const options = {
+    method: 'PUT',
+    url: '/users/' + fakeUser.id,
+    payload: { name: fakeUser.name, scope: fakeUser.scope },
+  }
+
+  const userMock = sinon.mock(User)
+  userMock.expects('findByIdAndUpdate').resolves(fakeUser)
+
+  const res = await server.inject(options)
+  userMock.verify()
+  userMock.restore()
+
+  t.equal(res.statusCode, 200, 'should return status code 200')
+  t.equal(res.result, fakeUser, 'Return is fakeUser')
+})
+
+test('Update a non-existing user', async t => {
+  const options = {
+    method: 'PUT',
+    url: '/users/' + fakeUser.id,
+    payload: { name: fakeUser.name, scope: fakeUser.scope },
+  }
+
+  const userMock = sinon.mock(User)
+  userMock.expects('findByIdAndUpdate').resolves(null)
+
+  const res = await server.inject(options)
+  userMock.verify()
+  userMock.restore()
+
+  t.equal(res.statusCode, 404, 'should return status code 404')
+})
+
+test('Update an user with wrong params', async t => {
+  const options = {
+    method: 'PUT',
+    url: '/users/' + fakeUser.id,
+    payload: { wrongParam: fakeUser.name },
+  }
+
+  const res = await server.inject(options)
+
+  t.equal(res.statusCode, 400, 'should return status code 400')
+})
+
 // # Remove an user
 
 test('Remove an user', async t => {
