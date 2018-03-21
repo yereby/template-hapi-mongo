@@ -6,7 +6,7 @@
   "description": "Template project to use hapijs",
   "main": "src/index.js",
   "scripts": {
-    "cover": "tap test/unit/*.js --cov --coverage-report=lcov",
+    "cover": "tap -J --cov --coverage-report=lcov -- test/unit/*.js ",
     "livereload": "livereload . -e pug -w 1700",
     "lint": "eslint .",
     "start": "nodemon -e js,pug src/index.js",
