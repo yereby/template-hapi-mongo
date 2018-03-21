@@ -2,8 +2,6 @@ const Hapi = require('hapi')
 
 if (process.env.NODE_ENV !== 'production') { require('dotenv').config() }
 
-const isStandAlone = require.main === module
-
 // # Plugins options
 
 const goodOpts = {
@@ -32,9 +30,6 @@ const plugins = [
   require ('inert'),
   require('vision'),
   require('hapi-swagger'),
-]
-
-const pluginsStandAlone = [
   { plugin: require('./plugins/DB'), options: mongooseOpts },
   { plugin: require('good'), options: goodOpts }
 ]
@@ -93,26 +88,13 @@ server.liftOff = async function () {
 
     server.route(require('./routes/index'))
 
-    if (isStandAlone) {
-      await server.register(pluginsStandAlone)
-
-      await server.start()
-      server.log('server', `Server started at ${server.info.uri}`)
-    } else {
-      await server.initialize()
-    }
+    await server.start()
+    server.log('server', `Server started at ${server.info.uri}`)
   } catch (err) { throw err }
 }
 
 // # Server start
-
-/**
- * We immediately call liftOff only if
- * the server is not launched from tests
- */
-if (isStandAlone) {
-  (async () => await server.liftOff())()
-}
+;(async () => await server.liftOff())()
 
 // Handeling unhandled rejections
 process.on('unhandledRejection', error => {
