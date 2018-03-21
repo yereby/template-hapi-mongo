@@ -66,7 +66,7 @@ test('Get one user', async t => {
   }
 
   const userMock = sinon.mock(User)
-  userMock.expects('findOne').resolves(fixtureUsers[0])
+  userMock.expects('findById').resolves(fixtureUsers[0])
 
   const res = await server.inject(options)
   userMock.verify()
@@ -83,7 +83,7 @@ test('Get an user that does not exists', async t => {
   }
 
   const userMock = sinon.mock(User)
-  userMock.expects('findOne').resolves(null)
+  userMock.expects('findById').resolves(null)
 
   const res = await server.inject(options)
   userMock.verify()
@@ -99,7 +99,7 @@ test('Get an user with errors', async t => {
   }
 
   const userMock = sinon.mock(User)
-  userMock.expects('findOne').throws()
+  userMock.expects('findById').throws()
 
   const res = await server.inject(options)
   userMock.verify()
@@ -203,14 +203,13 @@ test('Remove an user', async t => {
   }
 
   const userMock = sinon.mock(User)
-  userMock.expects('findOneAndRemove').withArgs({ _id: fixtureUsers[0].id })
-    .resolves(fixtureUsers[0])
+  userMock.expects('findByIdAndRemove').resolves(fixtureUsers[0])
 
   const res = await server.inject(options)
   userMock.verify()
   userMock.restore()
 
-  t.equal(res.statusCode, 200, 'should return status code 200')
+  t.equal(res.statusCode, 204, 'should return status code 204')
 })
 
 test('Remove an user that does not exists', async t => {
@@ -220,8 +219,7 @@ test('Remove an user that does not exists', async t => {
   }
 
   const userMock = sinon.mock(User)
-  userMock.expects('findOneAndRemove').withArgs({ _id: fixtureUsers[0].id })
-    .resolves(null)
+  userMock.expects('findByIdAndRemove').resolves(null)
 
   const res = await server.inject(options)
   userMock.verify()
@@ -237,8 +235,7 @@ test('Remove an user call with error', async t => {
   }
 
   const userMock = sinon.mock(User)
-  userMock.expects('findOneAndRemove').withArgs({ _id: fixtureUsers[0].id })
-    .throws()
+  userMock.expects('findByIdAndRemove').throws()
 
   const res = await server.inject(options)
   userMock.verify()

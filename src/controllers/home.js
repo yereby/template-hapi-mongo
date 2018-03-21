@@ -9,7 +9,8 @@ const User = require('../models/user')
  * @return {Object} The list of users || status code 404
  */
 module.exports.list = {
-  tags: ['api'],
+  tags: ['api', 'home'],
+  description: 'Display the list of users',
   handler: (require, h) => {
     return User.find({})
       .then(list => h.view('home/index', { list }) )

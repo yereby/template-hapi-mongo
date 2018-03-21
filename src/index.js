@@ -29,9 +29,12 @@ const plugins = [
   require('hapi-auth-jwt2'),
   require ('inert'),
   require('vision'),
-  require('hapi-swagger'),
   { plugin: require('./plugins/DB'), options: mongooseOpts },
-  { plugin: require('good'), options: goodOpts }
+  { plugin: require('good'), options: goodOpts },
+  {
+    plugin: require('hapi-swagger'),
+    options: { grouping: 'tags', sortEndpoints: 'ordered', }
+  },
 ]
 
 const secretKey = process.env.SECRET_KEY || 'Choose a secured Secret Key'
