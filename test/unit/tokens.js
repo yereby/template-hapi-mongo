@@ -2,7 +2,7 @@ const test = require('tap').test
 const sinon = require('sinon')
 require('sinon-mongoose')
 
-const { server, Auth, fixtureUsers, generateToken } = require('../lib/init.js')
+const { server, Auth, User, fixtureUsers, generateToken } = require('../lib/init.js')
 const secretKey = 'TestingSecretKey'
 
 test('Before all', async () => {
@@ -18,10 +18,15 @@ test('Ask a token', async t => {
     payload: { email: fixtureUsers[0].email },
   }
 
+  const userMock = sinon.mock(User)
+  userMock.expects('findOne').resolves(fixtureUsers[0])
+
   const authMock = sinon.mock(Auth)
   authMock.expects('create').resolves(fixtureUsers[0])
 
   const response = await server.inject(options)
+  userMock.verify()
+  userMock.restore()
   authMock.verify()
   authMock.restore()
 

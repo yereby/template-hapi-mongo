@@ -2,12 +2,13 @@ const Joi = require('joi')
 const Boom = require('Boom')
 const JWT = require('jsonwebtoken')
 
+const User = require('../models/user')
 const Auth = require('../models/auth')
 
-function generateToken(email, key) {
+function generateToken(payload, key) {
   const nowInSeconds = Math.round(new Date().getTime() / 1000)
   const exp = nowInSeconds + Number(process.env.TOKEN_EXPIRATION_SECONDS || 10)
-  const obj = { email, admin: false, exp }
+  const obj = { ...payload, exp }
 
   const token = JWT.sign(obj, key)
   return token
@@ -28,11 +29,19 @@ module.exports.ask = {
   handler: async function (request) {
     const email = request.payload.email
 
-    // TODO Check dans la base users
-    const token = generateToken(email, this.secretKey)
-    const iat = JWT.decode(token).iat
-
     try {
+      const user = await User.findOne({ email })
+      if (!user) { return Boom.notFound() }
+
+      const payload = {
+        email: user.email,
+        name: user.name,
+        scope: user.scope,
+      }
+
+      const token = generateToken(payload, this.secretKey)
+      const iat = JWT.decode(token).iat
+
       await Auth.create({ email, iat })
       return { token, iat }
     } catch(err) { throw err }
