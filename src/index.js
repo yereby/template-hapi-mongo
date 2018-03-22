@@ -40,10 +40,10 @@ const plugins = [
 const secretKey = process.env.SECRET_KEY || 'Choose a secured Secret Key'
 server.bind({ secretKey })
 
-async function validate(decoded) {
+async function validate(decoded, request) {
   try {
     const Auth = require('./models/auth')
-    const result = await Auth.findOne({ email: decoded.email, iat: decoded.iat })
+    const result = await Auth.findOne({ email: decoded.email, token: request.auth.token })
 
     if (!result) { return { isValid: false } }
     return { isValid: true }

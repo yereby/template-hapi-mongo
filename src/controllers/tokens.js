@@ -40,10 +40,9 @@ module.exports.ask = {
       }
 
       const token = generateToken(payload, this.secretKey)
-      const iat = JWT.decode(token).iat
 
-      await Auth.create({ email, iat })
-      return { token, iat }
+      await Auth.create({ email, token })
+      return { token }
     } catch(err) { throw err }
   }
 }
@@ -59,11 +58,8 @@ module.exports.revoke = {
     }
   },
   handler: async (request, h) => {
-    const { email, token } = request.payload
-    const iat = JWT.decode(token).iat
-
     try {
-      const remove = await Auth.remove({ email, iat })
+      const remove = await Auth.remove(request.payload)
       if (remove.n === 0) { return Boom.notFound() }
 
       return h.response().code(204)

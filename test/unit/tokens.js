@@ -2,7 +2,7 @@ const test = require('tap').test
 const sinon = require('sinon')
 require('sinon-mongoose')
 
-const { server, Auth, User, fixtureUsers, generateToken } = require('../lib/init.js')
+const { server, Auth, User, fixtureUsers  } = require('../lib/init.js')
 const secretKey = 'TestingSecretKey'
 
 test('Before all', async () => {
@@ -43,7 +43,8 @@ test('Revoke a token', async t => {
     url: '/tokens',
     payload: {
       email: fixtureUsers[0].email,
-      token: generateToken(fixtureUsers[0].email, secretKey) },
+      token: 'FalseToken',
+    }
   }
 
   const authMock = sinon.mock(Auth)
@@ -62,7 +63,8 @@ test('Revoke a non-existing token', async t => {
     url: '/tokens',
     payload: {
       email: fixtureUsers[0].email,
-      token: generateToken(fixtureUsers[0].email, secretKey) },
+      token: 'FalseToken',
+    }
   }
 
   const authMock = sinon.mock(Auth)

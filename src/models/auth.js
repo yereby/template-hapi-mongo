@@ -8,7 +8,7 @@ const authSchema = new Mongoose.Schema({
     index: true,
     required: true,
   },
-  iat: Number,
+  token: String,
 })
 
 module.exports = Mongoose.model('Auth', authSchema)
