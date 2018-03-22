@@ -80,7 +80,10 @@ server.liftOff = async function () {
       verifyOptions: { algorithms: [ 'HS256' ] }
     })
 
-    server.auth.default('jwt')
+    server.auth.default({
+      strategy: 'jwt',
+      scope: 'admin',
+    })
 
     server.views({
       engines: { pug: require('pug') },
