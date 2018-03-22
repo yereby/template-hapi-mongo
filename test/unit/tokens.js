@@ -2,10 +2,11 @@ const test = require('tap').test
 const sinon = require('sinon')
 require('sinon-mongoose')
 
-const { server, Auth, fixtureUsers } = require('../lib/init.js')
+const { server, Auth, fixtureUsers, generateToken } = require('../lib/init.js')
+const secretKey = 'TestingSecretKey'
 
 test('Before all', async () => {
-  server.bind({ secretKey: 'TestingSecretKey' })
+  server.bind({ secretKey })
   server.route(require('../../src/routes/tokens'))
   await server.initialize()
 })
@@ -14,7 +15,7 @@ test('Ask a token', async t => {
   const options = {
     method: 'POST',
     url: '/tokens',
-    payload: { email: fixtureUsers[0].email }
+    payload: { email: fixtureUsers[0].email },
   }
 
   const authMock = sinon.mock(Auth)
@@ -31,3 +32,40 @@ test('Ask a token', async t => {
   t.equal(regex.test(token), true, 'Token is correct')
 })
 
+test('Revoke a token', async t => {
+  const options = {
+    method: 'DELETE',
+    url: '/tokens',
+    payload: {
+      email: fixtureUsers[0].email,
+      token: generateToken(fixtureUsers[0].email, secretKey) },
+  }
+
+  const authMock = sinon.mock(Auth)
+  authMock.expects('remove').resolves({n: 1})
+
+  const response = await server.inject(options)
+  authMock.verify()
+  authMock.restore()
+
+  t.equal(response.statusCode, 204, 'status code = 204')
+})
+
+test('Revoke a non-existing token', async t => {
+  const options = {
+    method: 'DELETE',
+    url: '/tokens',
+    payload: {
+      email: fixtureUsers[0].email,
+      token: generateToken(fixtureUsers[0].email, secretKey) },
+  }
+
+  const authMock = sinon.mock(Auth)
+  authMock.expects('remove').resolves({n: 0})
+
+  const response = await server.inject(options)
+  authMock.verify()
+  authMock.restore()
+
+  t.equal(response.statusCode, 404, 'status code = 404')
+})

@@ -1,4 +1,5 @@
 const Joi = require('joi')
+const Boom = require('Boom')
 const JWT = require('jsonwebtoken')
 
 const Auth = require('../models/auth')
@@ -39,7 +40,6 @@ module.exports.ask = {
 }
 
 module.exports.revoke = {
-  auth: false,
   tags: ['api', 'tokens'],
   description: 'Revoke a token',
   plugins: { 'hapi-swagger': { payloadType: 'form', order: 2, } },
@@ -49,12 +49,15 @@ module.exports.revoke = {
       token: Joi.string().trim().required().description('The token to revoke'),
     }
   },
-  handler: async function (request) {
+  handler: async (request, h) => {
     const { email, token } = request.payload
     const iat = JWT.decode(token).iat
 
     try {
-      return await Auth.remove({ email, iat })
+      const remove = await Auth.remove({ email, iat })
+      if (remove.n === 0) { return Boom.notFound() }
+
+      return h.response().code(204)
     } catch(err) { throw err }
   }
 }
