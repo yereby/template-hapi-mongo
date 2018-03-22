@@ -33,7 +33,17 @@ const plugins = [
   { plugin: require('good'), options: goodOpts },
   {
     plugin: require('hapi-swagger'),
-    options: { grouping: 'tags', sortEndpoints: 'ordered', }
+    options: {
+      grouping: 'tags',
+      sortEndpoints: 'ordered',
+      securityDefinitions: {
+        jwt: {
+          type: 'apiKey',
+          name: 'Authorization',
+          in: 'header'
+        }
+      }
+    }
   },
 ]
 
