@@ -126,13 +126,11 @@ test('Create a real user', async t => {
   const userMock = sinon.mock(User)
   userMock.expects('create').resolves(fixtureUsers[0])
 
-  const res= await server.inject(options)
+  const res = await server.inject(options)
   userMock.verify()
   userMock.restore()
 
-  t.equal(res.result._id, fakeUser._id, 'ID is ok')
-  t.equal(res.result.name, fakeUser.name, 'Name is ok')
-  t.equal(res.result.scope, fakeUser.scope, 'Scope is defined')
+  t.equal(res.statusCode, 204, 'Status code should be 204')
 })
 
 /*

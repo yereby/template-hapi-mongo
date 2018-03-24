@@ -66,9 +66,10 @@ module.exports.create = {
       scope: Joi.array().items(['user', 'admin']).default(['user']).description('Rights of the new user'),
     }
   },
-  handler: async request => {
+  handler: async (request, h) => {
     try {
-      return await User.create(request.payload)
+      await User.create(request.payload)
+      return h.response().code(204)
     } catch(err) {
       if (err.code === 11000) { return Boom.conflict(err) }
       return Boom.forbidden(err)
