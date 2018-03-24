@@ -37,6 +37,23 @@ test('Ask a token', async t => {
   t.equal(regex.test(token), true, 'Token is correct')
 })
 
+test('Ask a non-existant token', async t => {
+  const options = {
+    method: 'POST',
+    url: '/tokens',
+    payload: { email: fixtureUsers[0].email },
+  }
+
+  const userMock = sinon.mock(User)
+  userMock.expects('findOne').resolves(null)
+
+  const response = await server.inject(options)
+  userMock.verify()
+  userMock.restore()
+
+  t.equal(response.statusCode, 404, 'status code = 404')
+})
+
 test('Revoke a token', async t => {
   const options = {
     method: 'DELETE',
