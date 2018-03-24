@@ -116,5 +116,3 @@ server.liftOff = async function () {
 process.on('unhandledRejection', error => {
   console.log('--- Unhandled promise rejection', error)
 })
-
-module.exports = server
