@@ -108,17 +108,6 @@ test('Get an user with errors', async t => {
   t.equal(res.statusCode, 500, 'should return status code 500')
 })
 
-test('DELETE not allowed on users list', async t => {
-  const options = {
-    method: 'DELETE',
-    url: '/users',
-  }
-
-  const res = await server.inject(options)
-
-  t.equal(res.statusCode, 405, 'should return status code 405 not allowed')
-})
-
 // # Create an user
 
 /*
