@@ -1,5 +1,11 @@
 const Auth = require('../models/auth')
 
+/**
+ * Validate the token passed in the request
+ *
+ * We check this token and the email in its payload
+ * are present in the auth collection
+ */
 module.exports.validate = async (decoded, request) => {
   try {
     const result = await Auth.findOne({
