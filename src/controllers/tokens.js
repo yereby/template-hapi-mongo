@@ -43,7 +43,7 @@ module.exports.ask = {
 
       await Auth.create({ email, token })
       return { token }
-    } catch(err) { throw err }
+    } catch(err) { return Boom.badImplementation(err) }
   }
 }
 
@@ -63,6 +63,6 @@ module.exports.revoke = {
       if (remove.n === 0) { return Boom.notFound() }
 
       return h.response().code(204)
-    } catch(err) { throw err }
+    } catch(err) { return Boom.badImplementation(err) }
   }
 }
