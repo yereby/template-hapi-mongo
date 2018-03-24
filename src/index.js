@@ -22,9 +22,6 @@ const mongooseOpts = {
   options: { connectTimeoutMS: 1000 }
 }
 
-// # Server configuration
-
-const server = new Hapi.Server({ port: process.env.PORT || 1337 })
 const plugins = [
   require('hapi-auth-jwt2'),
   require ('inert'),
@@ -47,18 +44,12 @@ const plugins = [
   },
 ]
 
+// # Server configuration
+
+const server = new Hapi.Server({ port: process.env.PORT || 1337 })
+
 const secretKey = process.env.SECRET_KEY || 'Choose a secured Secret Key'
 server.bind({ secretKey })
-
-async function validate(decoded, request) {
-  try {
-    const Auth = require('./models/auth')
-    const result = await Auth.findOne({ email: decoded.email, token: request.auth.token })
-
-    if (!result) { return { isValid: false } }
-    return { isValid: true }
-  } catch(err) { throw err }
-}
 
 // Add token to the response
 server.ext('onPreResponse', (request, h) => {
@@ -86,7 +77,7 @@ server.liftOff = async function () {
 
     server.auth.strategy('jwt', 'jwt', {
       key: secretKey,
-      validate: validate,
+      validate: require('./controllers/auth').validate,
       verifyOptions: { algorithms: [ 'HS256' ] }
     })
 
