@@ -8,6 +8,7 @@ const User = require('../models/user')
  * Show the list of all users
  *
  * @example GET /users/
+ *
  * @return {Object} The list of users || status code 404
  */
 module.exports.list =  {
@@ -22,11 +23,11 @@ module.exports.list =  {
 }
 
 /**
- * Show one user infos based on its _id
+ * Show one user infos
  *
  * @example GET /users/{ObjectId}
- * @params {string} id ObjectId of the user
- * @return {Object} User wanted || status code 404
+ *
+ * @return {Object} User infos || status code 404
  */
 module.exports.one = {
   tags: ['api', 'users'],
@@ -47,10 +48,10 @@ module.exports.one = {
 /**
  * Create one user
  *
+ * If the email already exists we return a 409 status code
+ *
  * @example POST /users
- * @params {string} email Email of the user
- * @params {string} name Name of the user
- * @params {Array} scope Rights of the user
+ *
  * @return {Object} User created || Some errors
  */
 module.exports.create = {
@@ -60,9 +61,9 @@ module.exports.create = {
   plugins: { 'hapi-swagger': { payloadType: 'form', order: 3, } },
   validate: {
     payload: {
-      email: Joi.string().email().required(),
-      name: Joi.string(),
-      scope: Joi.array().items(['user', 'admin']).default(['user']),
+      email: Joi.string().email().required().description('Email of the new user'),
+      name: Joi.string().description('Name of the new user'),
+      scope: Joi.array().items(['user', 'admin']).default(['user']).description('Rights of the new user'),
     }
   },
   handler: async request => {
@@ -76,10 +77,10 @@ module.exports.create = {
 }
 
 /**
- * Update one user informations
+ * Update one user's informations
  *
  * @example PUT /users/{ObjectId}
- * @params {string} id ObjectId of the user
+ *
  * @return {Object} User removed || status code 404
  */
 module.exports.set = {
@@ -109,10 +110,10 @@ module.exports.set = {
 }
 
 /**
- * Remove one user based on its _id
+ * Remove one user
  *
  * @example DELETE /users/{ObjectId}
- * @params {string} id ObjectId of the user
+ *
  * @return {Object} User removed || status code 404
  */
 module.exports.remove = {
