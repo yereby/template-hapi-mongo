@@ -3,10 +3,10 @@ const Boom = require('boom')
 const User = require('../models/user')
 
 /**
- * Show the list of all users
+ * Show the homepage
+ * With the list of all users
  *
- * @example GET /users/
- * @return {Object} The list of users || status code 404
+ * @example GET /
  */
 module.exports.list = {
   tags: ['api', 'home'],
