@@ -1,6 +1,6 @@
 const test = require('tap').test
 const sinon = require('sinon')
-require('sinon-mongoose')
+const sandbox = sinon.createSandbox()
 
 const { server, User, fixtureUsers } = require('../lib/init.js')
 const fakeUser = fixtureUsers[0]
@@ -16,15 +16,15 @@ test('Two users list', async t => {
     url: '/users',
   }
 
-  const userMock = sinon.mock(User)
-  userMock.expects('find').resolves(fixtureUsers)
+  sandbox.stub(User, 'find').returns(fixtureUsers)
 
   const res = await server.inject(options)
-  userMock.verify()
-  userMock.restore()
 
+  sinon.assert.calledOnce(User.find)
   t.equal(res.statusCode, 200, 'should return status code 200')
   t.equal(res.result.length, 1, 'should return 1 result')
+
+  sandbox.restore()
 })
 
 test('Empty users list', async t => {
@@ -33,14 +33,14 @@ test('Empty users list', async t => {
     url: '/users',
   }
 
-  const userMock = sinon.mock(User)
-  userMock.expects('find').resolves([])
+  sandbox.stub(User, 'find').returns([])
 
   const res = await server.inject(options)
-  userMock.verify()
-  userMock.restore()
 
+  sinon.assert.calledOnce(User.find)
   t.equal(res.statusCode, 404, 'should return status code 404')
+
+  sandbox.restore()
 })
 
 test('Users list with error', async t => {
@@ -49,14 +49,14 @@ test('Users list with error', async t => {
     url: '/users',
   }
 
-  const userMock = sinon.mock(User)
-  userMock.expects('find').throws()
+  sandbox.stub(User, 'find').throws()
 
   const res = await server.inject(options)
-  userMock.verify()
-  userMock.restore()
 
+  sinon.assert.calledOnce(User.find)
   t.equal(res.statusCode, 500, 'should return status code 500')
+
+  sandbox.restore()
 })
 
 test('Get one user', async t => {
@@ -65,15 +65,15 @@ test('Get one user', async t => {
     url: '/users/' + fakeUser.id,
   }
 
-  const userMock = sinon.mock(User)
-  userMock.expects('findById').resolves(fixtureUsers[0])
+  sandbox.stub(User, 'findById').returns(fixtureUsers[0])
 
   const res = await server.inject(options)
-  userMock.verify()
-  userMock.restore()
 
+  sinon.assert.calledOnce(User.findById)
   t.equal(res.statusCode, 200, 'should return status code 200')
   t.equal(res.result.name, fakeUser.name, 'User exists')
+
+  sandbox.restore()
 })
 
 test('Get an user that does not exists', async t => {
@@ -82,14 +82,14 @@ test('Get an user that does not exists', async t => {
     url: '/users/' + fakeUser.id,
   }
 
-  const userMock = sinon.mock(User)
-  userMock.expects('findById').resolves(null)
+  sandbox.stub(User, 'findById').returns(null)
 
   const res = await server.inject(options)
-  userMock.verify()
-  userMock.restore()
 
+  sinon.assert.calledOnce(User.findById)
   t.equal(res.statusCode, 404, 'should return status code 404')
+
+  sandbox.restore()
 })
 
 test('Get an user with errors', async t => {
@@ -98,14 +98,14 @@ test('Get an user with errors', async t => {
     url: '/users/' + fakeUser.id,
   }
 
-  const userMock = sinon.mock(User)
-  userMock.expects('findById').throws()
+  sandbox.stub(User, 'findById').throws()
 
   const res = await server.inject(options)
-  userMock.verify()
-  userMock.restore()
 
+  sinon.assert.calledOnce(User.findById)
   t.equal(res.statusCode, 500, 'should return status code 500')
+
+  sandbox.restore()
 })
 
 // # Create an user
@@ -123,14 +123,14 @@ test('Create a real user', async t => {
     payload: { email: fakeUser.email, name: fakeUser.name },
   }
 
-  const userMock = sinon.mock(User)
-  userMock.expects('create').resolves(fixtureUsers[0])
+  sandbox.stub(User, 'create').returns(fixtureUsers[0])
 
   const res = await server.inject(options)
-  userMock.verify()
-  userMock.restore()
 
+  sinon.assert.calledOnce(User.create)
   t.equal(res.statusCode, 204, 'Status code should be 204')
+
+  sandbox.restore()
 })
 
 /*
@@ -146,14 +146,14 @@ test('Create a real user with errors', async t => {
     payload: { email: fakeUser.email, name: fakeUser.name },
   }
 
-  const userMock = sinon.mock(User)
-  userMock.expects('create').throws({ code: 11000 })
+  sandbox.stub(User, 'create').throws({ code: 11000 })
 
   const res = await server.inject(options)
-  userMock.verify()
-  userMock.restore()
 
+  sinon.assert.calledOnce(User.create)
   t.equal(res.statusCode, 409, 'should return status code 409')
+
+  sandbox.restore()
 })
 
 /*
@@ -169,14 +169,14 @@ test('Create a real user with insertion error', async t => {
     payload: { email: fakeUser.email, name: fakeUser.name },
   }
 
-  const userMock = sinon.mock(User)
-  userMock.expects('create').throws()
+  sandbox.stub(User, 'create').throws()
 
   const res = await server.inject(options)
-  userMock.verify()
-  userMock.restore()
 
-  t.equal(res.statusCode, 403, 'should return status code 403')
+  sinon.assert.calledOnce(User.create)
+  t.equal(res.statusCode, 500, 'should return status code 500')
+
+  sandbox.restore()
 })
 
 // # Update an user
@@ -188,15 +188,15 @@ test('Update an existing user', async t => {
     payload: { name: fakeUser.name, scope: fakeUser.scope },
   }
 
-  const userMock = sinon.mock(User)
-  userMock.expects('findByIdAndUpdate').resolves(fakeUser)
+  sandbox.stub(User, 'findByIdAndUpdate').returns(fakeUser)
 
   const res = await server.inject(options)
-  userMock.verify()
-  userMock.restore()
 
+  sinon.assert.calledOnce(User.findByIdAndUpdate)
   t.equal(res.statusCode, 200, 'should return status code 200')
   t.equal(res.result, fakeUser, 'Return is fakeUser')
+
+  sandbox.restore()
 })
 
 test('Update a non-existing user', async t => {
@@ -206,14 +206,14 @@ test('Update a non-existing user', async t => {
     payload: { name: fakeUser.name, scope: fakeUser.scope },
   }
 
-  const userMock = sinon.mock(User)
-  userMock.expects('findByIdAndUpdate').resolves(null)
+  sandbox.stub(User, 'findByIdAndUpdate').returns(null)
 
   const res = await server.inject(options)
-  userMock.verify()
-  userMock.restore()
 
+  sinon.assert.calledOnce(User.findByIdAndUpdate)
   t.equal(res.statusCode, 404, 'should return status code 404')
+
+  sandbox.restore()
 })
 
 test('Update an user with wrong params', async t => {
@@ -236,14 +236,14 @@ test('Remove an user', async t => {
     url: '/users/' + fakeUser.id,
   }
 
-  const userMock = sinon.mock(User)
-  userMock.expects('findByIdAndRemove').resolves(fixtureUsers[0])
+  sandbox.stub(User, 'findByIdAndRemove').returns(fixtureUsers[0])
 
   const res = await server.inject(options)
-  userMock.verify()
-  userMock.restore()
 
+  sinon.assert.calledOnce(User.findByIdAndRemove)
   t.equal(res.statusCode, 204, 'should return status code 204')
+
+  sandbox.restore()
 })
 
 test('Remove an user that does not exists', async t => {
@@ -252,14 +252,14 @@ test('Remove an user that does not exists', async t => {
     url: '/users/' + fakeUser.id,
   }
 
-  const userMock = sinon.mock(User)
-  userMock.expects('findByIdAndRemove').resolves(null)
+  sandbox.stub(User, 'findByIdAndRemove').returns(null)
 
   const res = await server.inject(options)
-  userMock.verify()
-  userMock.restore()
 
+  sinon.assert.calledOnce(User.findByIdAndRemove)
   t.equal(res.statusCode, 404, 'should return status code 404')
+
+  sandbox.restore()
 })
 
 test('Remove an user call with error', async t => {
@@ -268,12 +268,12 @@ test('Remove an user call with error', async t => {
     url: '/users/' + fakeUser.id,
   }
 
-  const userMock = sinon.mock(User)
-  userMock.expects('findByIdAndRemove').throws()
+  sandbox.stub(User, 'findByIdAndRemove').throws()
 
   const res = await server.inject(options)
-  userMock.verify()
-  userMock.restore()
 
+  sinon.assert.calledOnce(User.findByIdAndRemove)
   t.equal(res.statusCode, 500, 'should return status code 500')
+
+  sandbox.restore()
 })

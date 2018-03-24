@@ -15,10 +15,13 @@ module.exports.list =  {
   tags: ['api', 'users'],
   description: 'List all users',
   plugins: { 'hapi-swagger': { order: 1, } },
-  handler: () => {
-    return User.find({})
-      .then(users => users.length ? users : Boom.notFound())
-      .catch(err => Boom.badImplementation(err))
+  handler: async () => {
+    try {
+      const users = await User.find({})
+
+      if (!users.length) { return Boom.notFound() }
+      return users
+    } catch(err) { return Boom.badImplementation(err) }
   }
 }
 
@@ -38,10 +41,13 @@ module.exports.one = {
       id: Joi.objectId().description('Id of the user to show')
     }
   },
-  handler: request => {
-    return User.findById(request.params.id)
-      .then(user => user || Boom.notFound())
-      .catch(err => Boom.badImplementation(err))
+  handler: async request => {
+    try {
+      const user = await User.findById(request.params.id)
+
+      if (!user) { return Boom.notFound() }
+      return user
+    } catch(err) { return Boom.badImplementation(err) }
   }
 }
 
@@ -72,7 +78,7 @@ module.exports.create = {
       return h.response().code(204)
     } catch(err) {
       if (err.code === 11000) { return Boom.conflict(err) }
-      return Boom.forbidden(err)
+      return Boom.badImplementation(err)
     }
   }
 }
@@ -126,12 +132,12 @@ module.exports.remove = {
       id: Joi.objectId().description('Id of the user to remove')
     }
   },
-  handler: (request, h) => {
-    return User.findByIdAndRemove(request.params.id)
-      .then(user => {
-        if (!user) { return Boom.notFound() }
-        return h.response().code(204)
-      })
-      .catch(err => Boom.badImplementation(err))
+  handler: async (request, h) => {
+    try {
+      const user = await User.findByIdAndRemove(request.params.id)
+      if (!user) { return Boom.notFound() }
+
+      return h.response().code(204)
+    } catch(err) { return Boom.badImplementation(err) }
   }
 }

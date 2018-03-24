@@ -1,6 +1,6 @@
 const test = require('tap').test
 const sinon = require('sinon')
-require('sinon-mongoose')
+const sandbox = sinon.createSandbox()
 
 const { server, User, fixtureUsers } = require('../lib/init.js')
 
@@ -24,15 +24,15 @@ test('Home entry with users', async t => {
     url: '/',
   }
 
-  const userMock = sinon.mock(User)
-  userMock.expects('find').resolves(fixtureUsers)
+  sandbox.stub(User, 'find').returns(fixtureUsers)
 
   const response = await server.inject(options)
-  userMock.verify()
-  userMock.restore()
+  sinon.assert.calledOnce(User.find)
 
   t.equal(response.statusCode, 200, 'status code = 200')
   t.equal(response.payload.includes(fixtureUsers[0].name), true, 'User is present')
+
+  sandbox.restore()
 })
 
 test('Home entry with no users', async t => {
@@ -41,16 +41,16 @@ test('Home entry with no users', async t => {
     url: '/',
   }
 
-  const userMock = sinon.mock(User)
-  userMock.expects('find').resolves([])
+  sandbox.stub(User, 'find').returns([])
 
   const response = await server.inject(options)
-  userMock.verify()
-  userMock.restore()
 
+  sinon.assert.calledOnce(User.find)
   t.equal(response.statusCode, 200, 'status code = 200')
   t.equal(response.payload.includes(fixtureUsers[0].name), false, 'User is not present')
   t.equal(response.payload.includes('No user'), true, 'No user')
+
+  sandbox.restore()
 })
 
 test('Home entry with errors', async t => {
@@ -59,12 +59,12 @@ test('Home entry with errors', async t => {
     url: '/',
   }
 
-  const userMock = sinon.mock(User)
-  userMock.expects('find').throws()
+  sandbox.stub(User, 'find').throws()
 
   const response = await server.inject(options)
-  userMock.verify()
-  userMock.restore()
+  sinon.assert.calledOnce(User.find)
 
   t.equal(response.statusCode, 500, 'status code = 500')
+
+  sandbox.restore()
 })

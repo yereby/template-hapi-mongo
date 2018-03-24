@@ -1,6 +1,6 @@
 const test = require('tap').test
 const sinon = require('sinon')
-require('sinon-mongoose')
+const sandbox = sinon.createSandbox()
 
 const { server, Auth, User, fixtureUsers  } = require('../lib/init.js')
 const secretKey = 'TestingSecretKey'
@@ -18,23 +18,20 @@ test('Ask a token', async t => {
     payload: { email: fixtureUsers[0].email },
   }
 
-  const userMock = sinon.mock(User)
-  userMock.expects('findOne').resolves(fixtureUsers[0])
-
-  const authMock = sinon.mock(Auth)
-  authMock.expects('create').resolves(fixtureUsers[0])
+  sandbox.stub(User, 'findOne').returns(fixtureUsers[0])
+  sandbox.stub(Auth, 'create').returns(fixtureUsers[0])
 
   const response = await server.inject(options)
-  userMock.verify()
-  userMock.restore()
-  authMock.verify()
-  authMock.restore()
 
   const regex =  /^[a-zA-Z0-9\-_]+?\.[a-zA-Z0-9\-_]+?\.([a-zA-Z0-9\-_]+)?$/g
   const token = response.result.token
 
+  sinon.assert.calledOnce(User.findOne)
+  sinon.assert.calledOnce(Auth.create)
   t.equal(response.statusCode, 200, 'status code = 200')
   t.equal(regex.test(token), true, 'Token is correct')
+
+  sandbox.restore()
 })
 
 test('Ask a non-existant token', async t => {
@@ -44,14 +41,14 @@ test('Ask a non-existant token', async t => {
     payload: { email: fixtureUsers[0].email },
   }
 
-  const userMock = sinon.mock(User)
-  userMock.expects('findOne').resolves(null)
+  sandbox.stub(User, 'findOne').returns(null)
 
   const response = await server.inject(options)
-  userMock.verify()
-  userMock.restore()
 
+  sinon.assert.calledOnce(User.findOne)
   t.equal(response.statusCode, 404, 'status code = 404')
+
+  sandbox.restore()
 })
 
 test('Revoke a token', async t => {
@@ -64,14 +61,14 @@ test('Revoke a token', async t => {
     }
   }
 
-  const authMock = sinon.mock(Auth)
-  authMock.expects('remove').resolves({n: 1})
+  sandbox.stub(Auth, 'remove').returns({ n: 1 })
 
   const response = await server.inject(options)
-  authMock.verify()
-  authMock.restore()
 
+  sinon.assert.calledOnce(Auth.remove)
   t.equal(response.statusCode, 204, 'status code = 204')
+
+  sandbox.restore()
 })
 
 test('Revoke a non-existing token', async t => {
@@ -84,12 +81,12 @@ test('Revoke a non-existing token', async t => {
     }
   }
 
-  const authMock = sinon.mock(Auth)
-  authMock.expects('remove').resolves({n: 0})
+  sandbox.stub(Auth, 'remove').returns({ n: 0 })
 
   const response = await server.inject(options)
-  authMock.verify()
-  authMock.restore()
 
+  sinon.assert.calledOnce(Auth.remove)
   t.equal(response.statusCode, 404, 'status code = 404')
+
+  sandbox.restore()
 })

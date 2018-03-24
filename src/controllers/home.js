@@ -11,9 +11,10 @@ const User = require('../models/user')
 module.exports.list = {
   tags: ['api', 'home'],
   description: 'Display the list of users',
-  handler: (require, h) => {
-    return User.find({})
-      .then(list => h.view('home/index', { list }) )
-      .catch(err => Boom.badImplementation(err))
+  handler: async (require, h) => {
+    try {
+      const list = await User.find({})
+      return h.view('home/index', { list })
+    } catch(err) { return Boom.badImplementation(err) }
   }
 }
