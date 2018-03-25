@@ -16,7 +16,7 @@ const userSchema = new Mongoose.Schema({
     index: true,
     maxlength: 255
   },
-  scope: { type: Array, default: ['user'] },
+  scope: Array,
 })
 
 /**
@@ -28,17 +28,21 @@ const userSchema = new Mongoose.Schema({
  */
 function checkScope(scope) {
   const defaultValue = ['user']
-  const acceptedValues = ['user', 'admin']
+  const enumValues = ['user', 'admin']
 
-  if (!scope || !scope.length) { return defaultValue }
+  // Remove duplicate values
+  scope = [...new Set(scope)]
 
-  // Check if the array contains anly values in the values array
-  scope = scope.filter(item =>
-    acceptedValues.findIndex(x => x === item) !== -1
-  )
+  // Remove empty values
+  scope = scope.filter(item => item != '')
 
-  // Return an array with unique values
-  return [...new Set(scope)]
+  // Check if the scope contains the enum values
+  scope = scope.filter(item => enumValues.includes(item))
+
+  // If no value return the default
+  if (!scope.length) { return defaultValue }
+
+  return scope
 }
 
 // ## Pre Methods
@@ -48,7 +52,7 @@ userSchema.pre('save', true, function (next, done) {
   next(done())
 })
 
-userSchema.pre('findOneAndUpdate', true, function (next, done) {
+userSchema.pre('update', true, function (next, done) {
   this._update.scope = checkScope(this._update.scope)
   next(done())
 })
