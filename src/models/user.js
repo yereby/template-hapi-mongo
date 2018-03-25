@@ -16,7 +16,7 @@ const userSchema = new Mongoose.Schema({
     index: true,
     maxlength: 255
   },
-  scope: Array
+  scope: { type: Array, default: ['user'] },
 })
 
 module.exports = Mongoose.model('User', userSchema)
