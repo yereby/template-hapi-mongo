@@ -62,11 +62,11 @@ t.test('Get one user', async t => {
     url: '/users/' + fakeUser.id,
   }
 
-  sandbox.stub(User, 'findById').returns(fakeUser)
+  sandbox.stub(User, 'findOne').returns(fakeUser)
 
   const res = await server.inject(options)
 
-  sinon.assert.calledOnce(User.findById)
+  sinon.assert.calledOnce(User.findOne)
   t.equal(res.statusCode, 200, 'should return status code 200')
   t.equal(res.result.name, fakeUser.name, 'User exists')
 })
@@ -77,11 +77,11 @@ t.test('Get an user that does not exists', async t => {
     url: '/users/' + fakeUser.id,
   }
 
-  sandbox.stub(User, 'findById').returns(null)
+  sandbox.stub(User, 'findOne').returns(null)
 
   const res = await server.inject(options)
 
-  sinon.assert.calledOnce(User.findById)
+  sinon.assert.calledOnce(User.findOne)
   t.equal(res.statusCode, 404, 'should return status code 404')
 })
 
@@ -91,11 +91,11 @@ t.test('Get an user with errors', async t => {
     url: '/users/' + fakeUser.id,
   }
 
-  sandbox.stub(User, 'findById').throws()
+  sandbox.stub(User, 'findOne').throws()
 
   const res = await server.inject(options)
 
-  sinon.assert.calledOnce(User.findById)
+  sinon.assert.calledOnce(User.findOne)
   t.equal(res.statusCode, 500, 'should return status code 500')
 })
 
@@ -173,13 +173,12 @@ t.test('Update an existing user', async t => {
     payload: { name: fakeUser.name, scope: fakeUser.scope },
   }
 
-  sandbox.stub(User, 'findByIdAndUpdate').returns(fakeUser)
+  sandbox.stub(User, 'update').returns(fakeUser)
 
   const res = await server.inject(options)
 
-  sinon.assert.calledOnce(User.findByIdAndUpdate)
-  t.equal(res.statusCode, 200, 'should return status code 200')
-  t.equal(res.result, fakeUser, 'Return is fakeUser')
+  sinon.assert.calledOnce(User.update)
+  t.equal(res.statusCode, 204, 'should return status code 204')
 })
 
 t.test('Update a non-existing user', async t => {
@@ -189,11 +188,11 @@ t.test('Update a non-existing user', async t => {
     payload: { name: fakeUser.name, scope: fakeUser.scope },
   }
 
-  sandbox.stub(User, 'findByIdAndUpdate').returns(null)
+  sandbox.stub(User, 'update').returns({ n: 0 })
 
   const res = await server.inject(options)
 
-  sinon.assert.calledOnce(User.findByIdAndUpdate)
+  sinon.assert.calledOnce(User.update)
   t.equal(res.statusCode, 404, 'should return status code 404')
 })
 
@@ -217,11 +216,11 @@ t.test('Remove an user', async t => {
     url: '/users/' + fakeUser.id,
   }
 
-  sandbox.stub(User, 'findByIdAndRemove').returns(fakeUser)
+  sandbox.stub(User, 'remove').returns(fakeUser)
 
   const res = await server.inject(options)
 
-  sinon.assert.calledOnce(User.findByIdAndRemove)
+  sinon.assert.calledOnce(User.remove)
   t.equal(res.statusCode, 204, 'should return status code 204')
 })
 
@@ -231,11 +230,11 @@ t.test('Remove an user that does not exists', async t => {
     url: '/users/' + fakeUser.id,
   }
 
-  sandbox.stub(User, 'findByIdAndRemove').returns(null)
+  sandbox.stub(User, 'remove').returns({ n: 0 })
 
   const res = await server.inject(options)
 
-  sinon.assert.calledOnce(User.findByIdAndRemove)
+  sinon.assert.calledOnce(User.remove)
   t.equal(res.statusCode, 404, 'should return status code 404')
 })
 
@@ -245,10 +244,10 @@ t.test('Remove an user call with error', async t => {
     url: '/users/' + fakeUser.id,
   }
 
-  sandbox.stub(User, 'findByIdAndRemove').throws()
+  sandbox.stub(User, 'remove').throws()
 
   const res = await server.inject(options)
 
-  sinon.assert.calledOnce(User.findByIdAndRemove)
+  sinon.assert.calledOnce(User.remove)
   t.equal(res.statusCode, 500, 'should return status code 500')
 })

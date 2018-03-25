@@ -43,7 +43,7 @@ module.exports.one = {
   },
   handler: async request => {
     try {
-      const user = await User.findById(request.params.id)
+      const user = await User.findOne({_id: request.params.id })
 
       if (!user) { return Boom.notFound() }
       return user
@@ -103,15 +103,16 @@ module.exports.set = {
       scope: Joi.array().items(['user', 'admin']).description('Scope of the user')
     }
   },
-  handler: async request => {
+  handler: async (request, h) => {
     try {
-      const user = await User.findByIdAndUpdate(
-        request.params.id,
+      const update = await User.update(
+        { _id: request.params.id },
         request.payload,
-        { new: true}
+        { runValidators: true },
       )
+      if (update.n === 0) { return Boom.notFound() }
 
-      return user || Boom.notFound()
+      return h.response().code(204)
     } catch(err) { return Boom.badImplementation(err) }
   }
 }
@@ -134,8 +135,8 @@ module.exports.remove = {
   },
   handler: async (request, h) => {
     try {
-      const user = await User.findByIdAndRemove(request.params.id)
-      if (!user) { return Boom.notFound() }
+      const remove = await User.remove({_id: request.params.id })
+      if (remove.n === 0) { return Boom.notFound() }
 
       return h.response().code(204)
     } catch(err) { return Boom.badImplementation(err) }
