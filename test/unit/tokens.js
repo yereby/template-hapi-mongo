@@ -2,6 +2,8 @@ const t = require('tap')
 const sinon = require('sinon')
 
 const { server, Auth, User, fixtureUsers  } = require('../lib/init.js')
+const fakeUser = fixtureUsers[0]
+
 const secretKey = 'TestingSecretKey'
 
 const sandbox = sinon.createSandbox()
@@ -17,11 +19,11 @@ t.test('Ask a token', async t => {
   const options = {
     method: 'POST',
     url: '/tokens',
-    payload: { email: fixtureUsers[0].email },
+    payload: { email: fakeUser.email },
   }
 
-  sandbox.stub(User, 'findOne').returns(fixtureUsers[0])
-  sandbox.stub(Auth, 'create').returns(fixtureUsers[0])
+  sandbox.stub(User, 'findOne').returns(fakeUser)
+  sandbox.stub(Auth, 'create').returns(fakeUser)
 
   const response = await server.inject(options)
 
@@ -38,7 +40,7 @@ t.test('Ask a non-existant token', async t => {
   const options = {
     method: 'POST',
     url: '/tokens',
-    payload: { email: fixtureUsers[0].email },
+    payload: { email: fakeUser.email },
   }
 
   sandbox.stub(User, 'findOne').returns(null)
@@ -54,7 +56,7 @@ t.test('Revoke a token', async t => {
     method: 'DELETE',
     url: '/tokens',
     payload: {
-      email: fixtureUsers[0].email,
+      email: fakeUser.email,
       token: 'FalseToken',
     }
   }
@@ -72,7 +74,7 @@ t.test('Revoke a non-existing token', async t => {
     method: 'DELETE',
     url: '/tokens',
     payload: {
-      email: fixtureUsers[0].email,
+      email: fakeUser.email,
       token: 'FalseToken',
     }
   }
@@ -83,4 +85,33 @@ t.test('Revoke a non-existing token', async t => {
 
   sinon.assert.calledOnce(Auth.remove)
   t.equal(response.statusCode, 404, 'status code = 404')
+})
+
+t.test('Check connection URL', async t => {
+  const options = {
+    method: 'GET',
+    url: '/tokens/' + 'aToken',
+  }
+
+  sandbox.stub(Auth, 'findOne').returns(fakeUser)
+
+  const response = await server.inject(options)
+
+  sinon.assert.calledOnce(Auth.findOne)
+  t.equal(response.statusCode, 200, 'status code = 200')
+  t.equal(response.result.isValid, true, 'Token is valid')
+})
+
+t.test('Check connection with a bad token', async t => {
+  const options = {
+    method: 'GET',
+    url: '/tokens/' + 'aToken',
+  }
+
+  sandbox.stub(Auth, 'findOne').returns(null)
+
+  const response = await server.inject(options)
+
+  sinon.assert.calledOnce(Auth.findOne)
+  t.equal(response.statusCode, 401, 'status code = 401')
 })

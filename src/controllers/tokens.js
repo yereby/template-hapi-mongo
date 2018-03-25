@@ -31,7 +31,6 @@ module.exports.generateToken = generateToken
  * Otherwise we throw a 404
  *
  * The email, name and scope of the user are put in the payload
- *
  * Then we create an entry in the auth collection
  *
  * @example POST /tokens
@@ -48,6 +47,7 @@ module.exports.ask = {
   },
   handler: async function (request) {
     const email = request.payload.email
+    const uri = request.server.info.uri
 
     try {
       const user = await User.findOne({ email })
@@ -60,9 +60,11 @@ module.exports.ask = {
       }
 
       const token = generateToken(payload, this.secretKey)
+      const connectionURL = uri + '/tokens/' + token
+
       await Auth.create({ email, token })
 
-      return { token }
+      return { token, connectionURL }
     } catch(err) { return Boom.badImplementation(err) }
   }
 }
@@ -91,6 +93,33 @@ module.exports.revoke = {
       if (remove.n === 0) { return Boom.notFound() }
 
       return h.response().code(204)
+    } catch(err) { return Boom.badImplementation(err) }
+  }
+}
+
+/**
+ * Check if a token is valid
+ *
+ * TODO Send it to the session
+ * TODO Check if expired
+ */
+module.exports.connection = {
+  auth: false,
+  tags: ['api', 'tokens'],
+  description: 'Verify a token',
+  validate: {
+    params: {
+      token: Joi.string().description('Token to verify')
+    }
+  },
+  handler: async function (request) {
+    try {
+      const token = request.params.token
+
+      const auth = Auth.findOne({ token })
+      if (!auth) { return Boom.unauthorized() }
+
+      return { isValid: true }
     } catch(err) { return Boom.badImplementation(err) }
   }
 }
