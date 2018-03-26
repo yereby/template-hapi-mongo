@@ -12,13 +12,13 @@ const Auth = require('../models/auth')
  * The expiration time is based on the current time + TOKEN_EXPIRATION_SECONDS
  * The fallback value for TOKEN_EXPIRATION_SECONDS is ten seconds
  */
-function generateToken(payload, key) {
+async function generateToken(payload, key) {
   const nowInSeconds = Math.round(new Date().getTime() / 1000)
   const exp = nowInSeconds + Number(process.env.TOKEN_EXPIRATION_SECONDS || 10)
 
   const obj = { ...payload, exp }
 
-  const token = JWT.sign(obj, key)
+  const token = await JWT.sign(obj, key)
   return token
 }
 
@@ -59,7 +59,7 @@ module.exports.ask = {
         scope: user.scope,
       }
 
-      const token = generateToken(payload, this.secretKey)
+      const token = await generateToken(payload, this.secretKey)
       const connectionURL = uri + '/tokens/' + token
 
       await Auth.create({ email, token })
