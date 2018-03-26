@@ -1,6 +1,8 @@
 # Template Hapi
 
+[![JSON Web Token compatible](https://jwt.io/img/badge-compatible.svg)](https://jwt.io)
 [![Maintainability](https://api.codeclimate.com/v1/badges/eb2ff0c093ef7eb0394f/maintainability)](https://codeclimate.com/github/yereby/template-hapi-mongo/maintainability)
+
 
 This project contains a template to run Hapi framework.  
 Writen in es6, it use Hapijs framework and those noticeable packages :
