@@ -100,8 +100,10 @@ module.exports.revoke = {
 /**
  * Check if a token is valid
  *
+ * Return an error if the token is expired
+ * or if it has been revoked
+ *
  * TODO Send it to the session
- * TODO Check if expired
  */
 module.exports.connection = {
   auth: false,
@@ -115,11 +117,16 @@ module.exports.connection = {
   handler: async function (request) {
     try {
       const token = request.params.token
+      await JWT.verify(token, this.secretKey)
 
-      const auth = Auth.findOne({ token })
+      const auth = await Auth.findOne({ token })
       if (!auth) { return Boom.unauthorized() }
 
       return { isValid: true }
-    } catch(err) { return Boom.badImplementation(err) }
+    } catch(err) {
+      if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
+        return Boom.unauthorized(err.message)
+      }
+      return Boom.badImplementation(err) }
   }
 }

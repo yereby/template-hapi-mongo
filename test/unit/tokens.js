@@ -1,7 +1,8 @@
 const t = require('tap')
 const sinon = require('sinon')
 
-const { server, Auth, User, fixtureUsers  } = require('../lib/init.js')
+const JWT = require('jsonwebtoken')
+const { server, Auth, User, fixtureUsers } = require('../lib/init.js')
 const fakeUser = fixtureUsers[0]
 
 const secretKey = 'TestingSecretKey'
@@ -93,10 +94,12 @@ t.test('Check connection URL', async t => {
     url: '/tokens/' + 'aToken',
   }
 
+  sandbox.stub(JWT, 'verify').returns(fakeUser)
   sandbox.stub(Auth, 'findOne').returns(fakeUser)
 
   const response = await server.inject(options)
 
+  sinon.assert.calledOnce(JWT.verify)
   sinon.assert.calledOnce(Auth.findOne)
   t.equal(response.statusCode, 200, 'status code = 200')
   t.equal(response.result.isValid, true, 'Token is valid')
@@ -108,10 +111,10 @@ t.test('Check connection with a bad token', async t => {
     url: '/tokens/' + 'aToken',
   }
 
-  sandbox.stub(Auth, 'findOne').returns(null)
+  sandbox.stub(JWT, 'verify').throws({ name: 'TokenExpiredError' })
 
   const response = await server.inject(options)
 
-  sinon.assert.calledOnce(Auth.findOne)
+  sinon.assert.calledOnce(JWT.verify)
   t.equal(response.statusCode, 401, 'status code = 401')
 })
